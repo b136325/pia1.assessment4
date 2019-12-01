@@ -74,7 +74,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Constant)
         USE_BUTTON_LOAD_IMAGE = true;
-        USE_BUTTON_REGISTER_IMAGE = true;
+        USE_BUTTON_REGISTER_IMAGE = false;
         USE_IMAGE_FILE_PATH_LABEL = true;
         USE_IMAGE_FILE_TYPE_LABEL = true;
         USE_IMAGE_VIEWER = true;
@@ -158,6 +158,18 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         function createChildComponents(app)
             app.info('Creating the child compomnents for the window.');
             
+            if (app.USE_IMAGE_FILE_PATH_LABEL == true)
+                app.createChildComponentImageFilePathLabel();
+            end
+
+            if (app.USE_IMAGE_FILE_TYPE_LABEL == true)
+                app.createChildComponentImageFileTypeLabel();
+            end  
+            
+            if (app.USE_IMAGE_FILE_TYPE_LABEL == true)
+                app.createChildComponentImageViewer();
+            end
+            
             if (app.USE_BUTTON_LOAD_IMAGE == true)
                 app.createChildComponentLoadImageButton();
             end
@@ -165,18 +177,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             if (app.USE_BUTTON_REGISTER_IMAGE == true)
                 app.createChildComponentRegisterImageButton();
             end
-            
-            if (app.USE_IMAGE_FILE_PATH_LABEL == true)
-                app.createChildComponentImageFilePathLabel();
-            end
-
-            if (app.USE_IMAGE_FILE_TYPE_LABEL == true)
-                app.createChildComponentImageViewer();
-            end
-
-            if (app.USE_IMAGE_FILE_TYPE_LABEL == true)
-                app.createChildComponentImageFileTypeLabel();
-            end    
+  
         end
 
         function createChildComponentImageFilePathLabel(app)
@@ -309,8 +310,12 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     
     methods (Access = private)
         
-        function enableRegistraterImageButton(app) 
-            app.buttonRegisterImage.Enable = 'on';
+        function enableRegistraterImageButton(app)
+            app.info('enableRegistraterImageButton.');
+            
+            if (app.USE_BUTTON_REGISTER_IMAGE == true)
+                app.buttonRegisterImage.Enable = 'on';
+            end    
         end
     end
     
@@ -359,7 +364,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     
     % ********************************************************************  
     % *                                                                  *
-    % * 5. PRIVATE UTILITY FUNCTIONS                                     *
+    % * 6. PRIVATE UTILITY FUNCTIONS                                     *
     % *                                                                  *
     % ********************************************************************
     methods (Access = private)
