@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.1.4                                         *
+    % * Version (Git tag): 0.1.5                                         *
     % *                                                                  *
     % ********************************************************************
   
@@ -46,6 +46,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         BUTTON_LOAD_IMAGE_TEXT = 'Load image';
         BUTTON_LOAD_IMAGE_TYPE = 'push';
         
+        BUTTON_REGISTER_IMAGE_ENABLED = 'off';
         BUTTON_REGISTER_IMAGE_POSITION = [109 150 225 22];
         BUTTON_REGISTER_IMAGE_TEXT = 'Register image';
         BUTTON_REGISTER_IMAGE_TYPE = 'push';
@@ -243,16 +244,23 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                 app.window, ...
                 app.BUTTON_REGISTER_IMAGE_TYPE ...
             );
-            app.buttonRegisterImage.ButtonPushedFcn = createCallbackFcn( ...
-                app, ...
-                @onButtonRegisterImageClick, ...
-                true ...
-            );
+            
+            app.buttonRegisterImage.ButtonPushedFcn ...
+                = createCallbackFcn( ...
+                    app, ...
+                    @onButtonRegisterImageClick, ...
+                    true ...
+                );
+            
+            app.buttonRegisterImage.Enable ...
+                = app.BUTTON_REGISTER_IMAGE_ENABLED;
+            
             app.buttonRegisterImage.Position ...
                 = app.BUTTON_REGISTER_IMAGE_POSITION;
             
             app.buttonRegisterImage.Text ...
                 = app.BUTTON_REGISTER_IMAGE_TEXT;
+            
         end        
     end
     
@@ -274,6 +282,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             
             if (ischar(p))
                imageFilePath = [p f];
+               app.enableRegistraterImageButton();
                app.updateImagePathLabel(imageFilePath);
                app.updateImageTypeLabel(imageFilePath);
                app.updateImageViewer(imageFilePath);
@@ -292,6 +301,19 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end  
     end   
   
+    % ********************************************************************  
+    % *                                                                  *
+    % * 6. PRIVATE BUTTON FUNCTIONS                                      *
+    % *                                                                  *
+    % ********************************************************************
+    
+    methods (Access = private)
+        
+        function enableRegistraterImageButton(app) 
+            app.buttonRegisterImage.Enable = 'on';
+        end
+    end
+    
     % ********************************************************************  
     % *                                                                  *
     % * 5. PRIVATE IMAGE FUNCTIONS                                       *
