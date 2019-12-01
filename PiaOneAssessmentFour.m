@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.2.1                                         *
+    % * Version (Git tag): 0.2.2                                         *
     % *                                                                  *
     % ********************************************************************
   
@@ -116,6 +116,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         REGISTRATION_COMBINED_IMAGE_VIEWER_POSITION = [2 350 349 147];
         REGISTRATION_REGISTERED_IMAGE_VIEWER_POSITION = [2 050 349 147];
         
+        REGISTRATION_ITERATIONS_KNOB_POSITION = [2 300 50 50]
+        REGISTRATION_RADIUS_KNOB_POSITION = [100 300 50 50]
+        
         REGISTRATION_OPTIONS_PANEL_FONT_SIZE = 14;
         REGISTRATION_OPTIONS_PANEL_POSITION = [775 21 444 534];
         REGISTRATION_OPTIONS_PANEL_TITLE = 'Registration options';
@@ -147,9 +150,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        instructions                matlab.ui.control.Label
-        title                       matlab.ui.control.Label
-        window                      matlab.ui.Figure
+        instructions                        matlab.ui.control.Label
+        title                               matlab.ui.control.Label
+        window                              matlab.ui.Figure
     end
 
     % ********************************************************************  
@@ -158,9 +161,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        tabGroup                    matlab.ui.container.TabGroup
-        tabLogger                   matlab.ui.container.Tab
-        tabRegistration             matlab.ui.container.Tab
+        tabGroup                            matlab.ui.container.TabGroup
+        tabLogger                           matlab.ui.container.Tab
+        tabRegistration                     matlab.ui.container.Tab
     end
     
     % ********************************************************************  
@@ -170,9 +173,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Access = public)
         targetImage                 
-        targetImageViewer           matlab.ui.control.UIAxes
-        targetImageLoadButton       matlab.ui.control.Button
-        targetImagePanel            matlab.ui.container.Panel        
+        targetImageViewer                   matlab.ui.control.UIAxes
+        targetImageLoadButton               matlab.ui.control.Button
+        targetImagePanel                    matlab.ui.container.Panel        
     end
         
     % ********************************************************************  
@@ -182,9 +185,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Access = public)
         movingImage                 
-        movingImageViewer           matlab.ui.control.UIAxes
-        movingImageLoadButton       matlab.ui.control.Button
-        movingImagePanel            matlab.ui.container.Panel       
+        movingImageViewer                   matlab.ui.control.UIAxes
+        movingImageLoadButton               matlab.ui.control.Button
+        movingImagePanel                    matlab.ui.container.Panel       
     end
 
     % ********************************************************************  
@@ -195,7 +198,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     properties (Access = public)
         registerButton                      matlab.ui.control.Button
         registrationCombinedImageViewer     matlab.ui.control.UIAxes
-        registrationOptionsPanel            matlab.ui.container.Panel 
+        registrationIterationsKnob          matlab.ui.control.Knob
+        registrationOptionsPanel            matlab.ui.container.Panel
+        registrationRadiusKnob              matlab.ui.control.Knob
         registrationRegisteredImageViewer   matlab.ui.control.UIAxes
     end
     
@@ -205,8 +210,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        logger                      matlab.ui.control.Label
-        loggerLabel                 matlab.ui.control.Label
+        logger                              matlab.ui.control.Label
+        loggerLabel                         matlab.ui.control.Label
     end        
 
     % ********************************************************************  
@@ -471,6 +476,17 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.registrationRegisteredImageViewer.XTickLabel = {'[ ]'};
             app.registrationRegisteredImageViewer.YTick = [];
             
+            app.registrationIterationsKnob = ...
+                uiknob(app.registrationOptionsPanel);
+            
+            app.registrationIterationsKnob.Position = ...
+                app.REGISTRATION_ITERATIONS_KNOB_POSITION;
+            
+            app.registrationRadiusKnob = ...
+                uiknob(app.registrationOptionsPanel);
+            
+            app.registrationRadiusKnob.Position = ...
+                app.REGISTRATION_RADIUS_KNOB_POSITION;            
         end
         
         function createChildComponentInstructions(app)

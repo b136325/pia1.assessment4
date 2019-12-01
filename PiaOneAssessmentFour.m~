@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.1.10                                        *
+    % * Version (Git tag): 0.2.1                                         *
     % *                                                                  *
     % ********************************************************************
   
@@ -33,6 +33,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Constant)
+        INITIAL_RADIUS_REDUCTION_FACTOR = 3.5;
+        INITIAL_RADIUS_INCREASE_FACTOR = 3;
         IMAGE_FILE_EXTENSIONS_WHITELIST = '*.jpg;*.tif;*.png;*.gif';
     end
     
@@ -145,9 +147,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        instructions                matlab.ui.control.Label
-        title                       matlab.ui.control.Label
-        window                      matlab.ui.Figure
+        instructions                        matlab.ui.control.Label
+        title                               matlab.ui.control.Label
+        window                              matlab.ui.Figure
     end
 
     % ********************************************************************  
@@ -156,9 +158,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        tabGroup                    matlab.ui.container.TabGroup
-        tabLogger                   matlab.ui.container.Tab
-        tabRegistration             matlab.ui.container.Tab
+        tabGroup                            matlab.ui.container.TabGroup
+        tabLogger                           matlab.ui.container.Tab
+        tabRegistration                     matlab.ui.container.Tab
     end
     
     % ********************************************************************  
@@ -168,9 +170,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Access = public)
         targetImage                 
-        targetImageViewer           matlab.ui.control.UIAxes
-        targetImageLoadButton       matlab.ui.control.Button
-        targetImagePanel            matlab.ui.container.Panel        
+        targetImageViewer                   matlab.ui.control.UIAxes
+        targetImageLoadButton               matlab.ui.control.Button
+        targetImagePanel                    matlab.ui.container.Panel        
     end
         
     % ********************************************************************  
@@ -180,9 +182,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Access = public)
         movingImage                 
-        movingImageViewer           matlab.ui.control.UIAxes
-        movingImageLoadButton       matlab.ui.control.Button
-        movingImagePanel            matlab.ui.container.Panel       
+        movingImageViewer                   matlab.ui.control.UIAxes
+        movingImageLoadButton               matlab.ui.control.Button
+        movingImagePanel                    matlab.ui.container.Panel       
     end
 
     % ********************************************************************  
@@ -193,7 +195,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     properties (Access = public)
         registerButton                      matlab.ui.control.Button
         registrationCombinedImageViewer     matlab.ui.control.UIAxes
-        registrationOptionsPanel            matlab.ui.container.Panel 
+        registrationIterationsKnob          matlab.ui.control.Knob
+        registrationOptionsPanel            matlab.ui.container.Panel
+        registrationRadiusKnob              matlab.ui.control.Knob
         registrationRegisteredImageViewer   matlab.ui.control.UIAxes
     end
     
@@ -203,8 +207,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        logger                      matlab.ui.control.Label
-        loggerLabel                 matlab.ui.control.Label
+        logger                              matlab.ui.control.Label
+        loggerLabel                         matlab.ui.control.Label
     end        
 
     % ********************************************************************  
@@ -469,6 +473,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.registrationRegisteredImageViewer.XTickLabel = {'[ ]'};
             app.registrationRegisteredImageViewer.YTick = [];
             
+            app.registrationIterationsKnob = ...
+                unknob( ...
+    );
         end
         
         function createChildComponentInstructions(app)
@@ -514,10 +521,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             };
             [f, p] = uigetfile(imageFileUploadSpecification);
             
-            % https://uk.mathworks.com/matlabcentral/answers/317676-uigetfile-will-make-app-be-behind-another-windows
-            app.window.Visible = 'off'; 
-            app.window.Visible = 'on';
-            
             if (ischar(p))
                app.updateMovingImageLoadButtonText( ...
                    app.MOVING_IMAGE_LOAD_BUTTON_TITLE_RELOAD ...
@@ -537,11 +540,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                 app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
                 'All recognised image files' ...
             };
-            [f, p] = uigetfile(imageFileUploadSpecification);
-            
-            % https://uk.mathworks.com/matlabcentral/answers/317676-uigetfile-will-make-app-be-behind-another-windows
-            app.window.Visible = 'off'; 
-            app.window.Visible = 'on';            
+            [f, p] = uigetfile(imageFileUploadSpecification);          
             
             if (ischar(p))
                app.updateTargetImageLoadButtonText( ...
@@ -550,19 +549,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                targetImageFilePath = [p f];
                app.updateTargetImageViewer(targetImageFilePath);
             end
-        end
-        
-        function onButtonClickRegister(app, ~)
-             app.info( ...
-                 'Callback: onButtonRegisterImageClick.', ...
-                 true ...
-             );
-             
-             registeredImage = app.register();
-                         app.updateRegistrationRegisteredImageViewer( ...
-                registeredImage ...
-            );
-             
         end
         
         function onStartup(app)
@@ -640,17 +626,22 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                     app.registrationCombinedImageViewer, ...
                     pairedImage ...
                 );
+            
+                app.register();
             end   
         end 
         
-        function updateRegistrationRegisteredImageViewer(app, registeredImage)
+        function updateRegistrationRegisteredImageViewer( ...
+            app, ...
+            registeredImage ...
+        )
              app.info( ...
                  'updateRegistrationRegisteredImageViewer.', ...
                  true ...
             );              
 
             imagesc( ...
-                app.registrationCombinedImageViewer, ...
+                app.registrationRegisteredImageViewer, ...
                 registeredImage ...
             );
         end         
@@ -664,16 +655,31 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     
     methods (Access = private)
 
-        function registeredImage = register(~)
+        function registeredImage = register(app)            
+            app.info( ...
+                 'Register.', ...
+                 true ...
+             );
+         
             [optimizer, metric] = imregconfig('multimodal');
             
+            optimizer.MaximumIterations = ...
+                optimizer.MaximumIterations * app.INITIAL_RADIUS_INCREASE_FACTOR;
+            
+            optimizer.InitialRadius = ...
+                optimizer.InitialRadius / app.INITIAL_RADIUS_REDUCTION_FACTOR;
+
             registeredImage = imregister( ...
-                rgb2gray(imageA), ...
-                rgb2gray(imageB), ...
+                app.movingImage, ...
+                app.targetImage, ...
                 'affine', ...
                 optimizer, ...
                 metric ...
             );
+        
+             app.updateRegistrationRegisteredImageViewer( ...
+                registeredImage ...
+            );        
         end               
     end     
         
