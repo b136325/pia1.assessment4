@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.1.1                                         *
+    % * Version (Git tag): 0.1.2                                         *
     % *                                                                  *
     % ********************************************************************
   
@@ -46,6 +46,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         BUTTON_LOAD_IMAGE_TEXT = 'Load image';
         BUTTON_LOAD_IMAGE_TYPE = 'push';
         
+        IMAGE_FILE_PATH_LABEL_DEFAULT_TEXT = '';
+        IMAGE_FILE_PATH_LABEL_HORIZONTAL_ALIGNMENT = 'right';
+        IMAGE_FILE_PATH_LABEL_POSITION = [109 126 106 22];
+        
         IMAGE_VIEWER_POSITION = [43 181 357 305];
         
         WINDOW_AUTO_RESIZE_CHILDREN = 'off';
@@ -67,6 +71,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Access = public)
         buttonLoadImage      matlab.ui.control.Button
+        imageFilePathLabel   matlab.ui.control.Label
         imageViewer          matlab.ui.control.UIAxes
         window               matlab.ui.Figure
     end
@@ -129,7 +134,23 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.info('Creating the child compomnents for the window.');
             
             app.createChildComponentLoadImageButton();
+            app.createChildComponentImageFilePathLabel();
             app.createChildComponentImageViewer();
+        end
+
+        function createChildComponentImageFilePathLabel(app)
+            app.info('Creating the imageFilePath label compomnent.');
+
+            app.imageFilePathLabel = uilabel(app.window);
+            
+            app.imageFilePathLabel.HorizontalAlignment ...
+                = app.IMAGE_FILE_PATH_LABEL_HORIZONTAL_ALIGNMENT;
+            
+            app.imageFilePathLabel.Position ...
+                = app.IMAGE_FILE_PATH_LABEL_POSITION;
+            
+            app.imageFilePathLabel.Text ...
+                = app.IMAGE_FILE_PATH_LABEL_DEFAULT_TEXT;
         end
         
         function createChildComponentImageViewer(app)
@@ -177,7 +198,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             
             if (ischar(p))
                imageFilePath = [p f];
-               app.showImage(imageFilePath);
+               app.updateImagePathLabel(imageFilePath);
+               app.updateImageViewer(imageFilePath);
             end
         end
         
@@ -194,8 +216,14 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     
     methods (Access = private)
         
-        function showImage(app, imageFilePath)
-            app.info('Showing the image.');
+        function updateImagePathLabel(app, imageFilePath)
+            app.info('Update the imageFilePath label.');
+  
+            app.imageFilePathLabel.Text = imageFilePath;
+        end
+        
+        function updateImageViewer(app, imageFilePath)
+            app.info('Update the imageViewer.');
   
             image = imread(imageFilePath);
             imagesc(app.imageViewer,image);

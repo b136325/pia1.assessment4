@@ -7,6 +7,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
+    % * Version (Git tag): 0.1.1                                         *
+    % *                                                                  *
     % ********************************************************************
   
     % ********************************************************************  
@@ -44,6 +46,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         BUTTON_LOAD_IMAGE_TEXT = 'Load image';
         BUTTON_LOAD_IMAGE_TYPE = 'push';
         
+        IMAGE_FILE_PATH_LABEL_HORIZONTAL_ALIGNMENT = 'right';
+        IMAGE_FILE_PATH_LABEL_POSITION = [109 126 106 22];
         IMAGE_VIEWER_POSITION = [43 181 357 305];
         
         WINDOW_AUTO_RESIZE_CHILDREN = 'off';
@@ -65,7 +69,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Access = public)
         buttonLoadImage      matlab.ui.control.Button
-        imageViewer          matlab.ui.Figure
+        imageViewer          matlab.ui.control.UIAxes
+        imagePathLabel       matlab.ui.control.Label
         window               matlab.ui.Figure
     end
     
@@ -127,16 +132,28 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.info('Creating the child compomnents for the window.');
             
             app.createChildComponentLoadImageButton();
+            app.createChildComponentImageViewer();
+        end
+
+        function createChildComponentImageFilePathLabel(app)
+            app.info('Creating the imageFilePath label compomnent.');
+
+            app.imageFilePathLabel = uilabel(app.UIFigure);
+            app.imageFilePathLabel.HorizontalAlignment = IMAGE_FILE_PATH_LABEL_HORIZONTAL_ALIGNMENT;
+            app.imageFilePathLabel.Position ...
+                = app.IMAGE_FILE_PATH_LABEL_POSITION;
+            
+            app.imageFilePathLabel.Text = 'Predefined Images';
         end
         
-        function createChildComponentImageView(app)
-            app.info('Creating the Load Image Button child compomnent.');
+        function createChildComponentImageViewer(app)
+            app.info('Creating the Image Viewer compomnent.');
             app.imageViewer = uiaxes(app.window);
-            
+
+            app.imageViewer.Position = app.IMAGE_VIEWER_POSITION;   
             app.imageViewer.XTick = [];
             app.imageViewer.XTickLabel = {'[ ]'};
             app.imageViewer.YTick = [];
-            app.imageViewer.Position = app.IMAGE_VIEWER_POSITION;   
         end
         
         function createChildComponentLoadImageButton(app)
@@ -166,16 +183,15 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         function onButtonLoadImageClick(app, ~)
             app.info('Creating the Load Image Button child compomnent.');   
 
-            filterspec = { ...
+            imageFileUploadSpecification = { ...
                 app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
                 'All recognised image files' ...
             };
-            [~, p] = uigetfile(filterspec);
+            [f, p] = uigetfile(imageFileUploadSpecification);
             
-            % Make sure user didn't cancel uigetfile dialog
             if (ischar(p))
-               % fname = [p f];
-               % updateimage(app, fname);
+               imageFilePath = [p f];
+               app.updateImageViewer(imageFilePath);
             end
         end
         
@@ -184,6 +200,29 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end  
     end   
   
+    % ********************************************************************  
+    % *                                                                  *
+    % * 5. PRIVATE IMAGE FUNCTIONS                                       *
+    % *                                                                  *
+    % ********************************************************************
+    
+    methods (Access = private)
+        
+        function updateImagePathLabel(app, imageFilePath)
+            app.info('Update the imageFilePath label.');
+  
+            image = imread(imageFilePath);
+            imagesc(app.imageViewer,image);
+        end
+        
+        function updateImageViewer(app, imageFilePath)
+            app.info('Update the imageViewer.');
+  
+            image = imread(imageFilePath);
+            imagesc(app.imageViewer,image);
+        end
+    end
+    
     % ********************************************************************  
     % *                                                                  *
     % * 5. PRIVATE UTILITY FUNCTIONS                                     *
