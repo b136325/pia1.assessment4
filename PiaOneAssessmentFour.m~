@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.1.6                                         *
+    % * Version (Git tag): 0.1.5                                         *
     % *                                                                  *
     % ********************************************************************
   
@@ -359,13 +359,13 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                 uipanel(app.tabRegistration);
             
             app.registrationOptionsPanel.Title = ...
-                app.REGISTRATION_OPTIONS_PANEL_TITLE;
+                = app.REGISTRATION_OPTIONS_PANEL_TITLE;
             
-            app.registrationOptionsPanel.FontSize = ...
-                app.REGISTRATION_OPTIONS_PANEL_FONT_SIZE;
+            app.registrationOptionsPanel.FontSize ...
+                = app.REGISTRATION_OPTIONS_PANEL_FONT_SIZE;
             
-            app.registrationOptionsPanel.Position = ...
-                app.REGISTRATION_OPTIONS_PANEL_POSITION;
+            app.registrationOptionsPanel.Position ...
+                = app.REGISTRATION_OPTIONS_PANEL_POSITION;
         end
         
         function createChildComponentInstructions(app)
@@ -379,7 +379,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         function createChildComponentLogger(app)
             app.info('Creating the logger child compomnent.');
             
-            app.loggerLabel = uilabel(app.tabLogger);
+            app.loggerLabel = ...
+                uilabel(app.tabLogger);
             
             app.loggerLabel.HorizontalAlignment = ...
                 app.LOGGER_LABEL_HORIZONTAL_POSITION;
@@ -440,9 +441,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             
             if (ischar(p))
                imageFilePath = [p f];
-               % app.updateImagePathLabel(imageFilePath);
-               % app.updateImageTypeLabel(imageFilePath);
-               % app.updateImageViewer(imageFilePath);
+               app.enableRegistraterImageButton();
+               app.updateImagePathLabel(imageFilePath);
+               app.updateImageTypeLabel(imageFilePath);
+               app.updateImageViewer(imageFilePath);
             end
         end
         
@@ -457,12 +459,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.info('Startup function.'); 
         end  
     end
-    
-    % ********************************************************************  
-    % *                                                                  *
-    % * 5. PRIVATE IMAGE FUNCTIONS                                       *
-    % *                                                                  *
-    % ********************************************************************
     
     % ********************************************************************  
     % *                                                                  *
