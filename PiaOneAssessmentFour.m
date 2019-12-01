@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.1.9                                         *
+    % * Version (Git tag): 0.1.10                                        *
     % *                                                                  *
     % ********************************************************************
   
@@ -111,6 +111,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         REGISTER_BUTTON_TITLE_DEFAULT = 'Register';
         REGISTER_BUTTON_TYPE = 'push';        
         
+        REGISTRATION_IMAGE_VIEWER_POSITION = [2 350 349 147];
+                
         REGISTRATION_OPTIONS_PANEL_FONT_SIZE = 14;
         REGISTRATION_OPTIONS_PANEL_POSITION = [775 21 444 534];
         REGISTRATION_OPTIONS_PANEL_TITLE = 'Registration options';
@@ -189,6 +191,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Access = public)
         registerButton              matlab.ui.control.Button
+        registrationImageViewer     matlab.ui.control.UIAxes
         registrationOptionsPanel    matlab.ui.container.Panel 
     end
     
@@ -223,7 +226,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
 
         function delete(app)
-            app.info('Delete app.');
+            app.info('Delete app.', false);
             delete(app.window)
         end
     end
@@ -412,8 +415,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.info( ...
                 'Creating registrationOptionsPanel.', ...
                 true ...
-            );
-            
+            );                
+        
             app.registrationOptionsPanel = ...
                 uipanel(app.tabRegistration);
             
@@ -424,12 +427,13 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                 app.REGISTRATION_OPTIONS_PANEL_FONT_SIZE;
             
             app.registrationOptionsPanel.Position = ...
-                app.REGISTRATION_OPTIONS_PANEL_POSITION;
+                app.REGISTRATION_OPTIONS_PANEL_POSITION;  
             
-            app.registerButton = uibutton( ...
+                        app.registerButton = uibutton( ...
                 app.registrationOptionsPanel, ...
                 app.REGISTER_BUTTON_TYPE ...
             );
+        
             app.registerButton.Position = ...
                 app.REGISTER_BUTTON_POSITION;
             
@@ -441,7 +445,17 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                     app, ...
                     @onButtonClickRegister, ...
                     true ...
-                );              
+                ); 
+            
+            app.registrationImageViewer = ...
+                uiaxes(app.registrationOptionsPanel);
+            
+            app.registrationImageViewer.Position = ...
+                app.REGISTRATION_IMAGE_VIEWER_POSITION;
+
+            app.registrationImageViewer.XTick = [];
+            app.registrationImageViewer.XTickLabel = {'[ ]'};
+            app.registrationImageViewer.YTick = [];
         end
         
         function createChildComponentInstructions(app)
@@ -487,6 +501,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             };
             [f, p] = uigetfile(imageFileUploadSpecification);
             
+            % https://uk.mathworks.com/matlabcentral/answers/317676-uigetfile-will-make-app-be-behind-another-windows
+            app.window.Visible = 'off'; 
+            app.window.Visible = 'on';
+            
             if (ischar(p))
                app.updateMovingImageLoadButtonText( ...
                    app.MOVING_IMAGE_LOAD_BUTTON_TITLE_RELOAD ...
@@ -507,6 +525,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                 'All recognised image files' ...
             };
             [f, p] = uigetfile(imageFileUploadSpecification);
+            
+            % https://uk.mathworks.com/matlabcentral/answers/317676-uigetfile-will-make-app-be-behind-another-windows
+            app.window.Visible = 'off'; 
+            app.window.Visible = 'on';            
             
             if (ischar(p))
                app.updateTargetImageLoadButtonText( ...
@@ -559,7 +581,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                 return;
             end 
  
-            imagesc(app.movingImageViewer, app.movingImage);  
+            imagesc(app.movingImageViewer, app.movingImage);
+            app.updateRegistrationImageViewer();
         end
         
         function updateTargetImageLoadButtonText(app, updatedText)
@@ -582,8 +605,25 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                 return;
             end 
  
-            imagesc(app.targetImageViewer, app.targetImage);  
+            imagesc(app.targetImageViewer, app.targetImage);
+            app.updateRegistrationImageViewer();
         end
+        
+        function updateRegistrationImageViewer(app)
+             app.info( ...
+                 'updateRegistrationImageViewer.', ...
+                 true ...
+            );              
+
+            if (~isempty(app.movingImage) && ~isempty(app.targetImage))
+                
+                figure('Visible', 'off');
+                pairedImageObject = imshowpair(app.movingImage, app.targetImage);
+                pairedImage = pairedImageObject.CData;
+                imagesc(app.registrationImageViewer, pairedImage);
+                figure('Visible', 'on');
+            end   
+        end        
     end
     
     % ********************************************************************  
@@ -595,7 +635,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = private)
 
         function register(app)
-            app.info('Register.', true);
   
         end               
     end     
