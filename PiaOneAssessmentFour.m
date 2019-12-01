@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.2.2                                         *
+    % * Version (Git tag): 0.2.3                                         *
     % *                                                                  *
     % ********************************************************************
   
@@ -108,16 +108,12 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * 1.e CONSTANTS: Registration options panel.                       *
     % *                                                                  *
     % ********************************************************************
-    properties (Constant)
-        REGISTER_BUTTON_POSITION = [125 308 100 22];
-        REGISTER_BUTTON_TITLE_DEFAULT = 'Register';
-        REGISTER_BUTTON_TYPE = 'push';        
-        
+    properties (Constant)     
         REGISTRATION_COMBINED_IMAGE_VIEWER_POSITION = [2 350 349 147];
         REGISTRATION_REGISTERED_IMAGE_VIEWER_POSITION = [2 050 349 147];
         
-        REGISTRATION_ITERATIONS_KNOB_POSITION = [2 300 50 50]
-        REGISTRATION_RADIUS_KNOB_POSITION = [100 300 50 50]
+        REGISTRATION_ITERATIONS_KNOB_POSITION = [80 260 50 50]
+        REGISTRATION_RADIUS_KNOB_POSITION = [260 260 50 50]
         
         REGISTRATION_OPTIONS_PANEL_FONT_SIZE = 14;
         REGISTRATION_OPTIONS_PANEL_POSITION = [775 21 444 534];
@@ -196,7 +192,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        registerButton                      matlab.ui.control.Button
         registrationCombinedImageViewer     matlab.ui.control.UIAxes
         registrationIterationsKnob          matlab.ui.control.Knob
         registrationOptionsPanel            matlab.ui.container.Panel
@@ -438,24 +433,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.registrationOptionsPanel.Position = ...
                 app.REGISTRATION_OPTIONS_PANEL_POSITION;  
             
-                        app.registerButton = uibutton( ...
-                app.registrationOptionsPanel, ...
-                app.REGISTER_BUTTON_TYPE ...
-            );
-        
-            app.registerButton.Position = ...
-                app.REGISTER_BUTTON_POSITION;
-            
-            app.registerButton.Text = ...
-                app.REGISTER_BUTTON_TITLE_DEFAULT;  
-            
-            app.registerButton.ButtonPushedFcn = ...
-                createCallbackFcn( ...
-                    app, ...
-                    @onButtonClickRegister, ...
-                    true ...
-                ); 
-            
             app.registrationCombinedImageViewer = ...
                 uiaxes(app.registrationOptionsPanel);
             
@@ -479,14 +456,35 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.registrationIterationsKnob = ...
                 uiknob(app.registrationOptionsPanel);
             
+            app.registrationIterationsKnob.Limits = [1, 1000];
+            app.registrationIterationsKnob.Value = 100;
+            
             app.registrationIterationsKnob.Position = ...
                 app.REGISTRATION_ITERATIONS_KNOB_POSITION;
+            
+            app.registrationIterationsKnob.ValueChangedFcn = ...
+                createCallbackFcn( ...
+                    app, ...
+                    @onKnobValueChange, ...
+                    true ...
+                );  
             
             app.registrationRadiusKnob = ...
                 uiknob(app.registrationOptionsPanel);
             
+            app.registrationRadiusKnob.Limits = [0.001, 0.01];
+            app.registrationRadiusKnob.Value = 0.0063;
+            
             app.registrationRadiusKnob.Position = ...
-                app.REGISTRATION_RADIUS_KNOB_POSITION;            
+                app.REGISTRATION_RADIUS_KNOB_POSITION;
+            
+            app.registrationRadiusKnob.ValueChangedFcn = ...
+                createCallbackFcn( ...
+                    app, ...
+                    @onKnobValueChange, ...
+                    true ...
+                );  
+            
         end
         
         function createChildComponentInstructions(app)
@@ -560,6 +558,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                targetImageFilePath = [p f];
                app.updateTargetImageViewer(targetImageFilePath);
             end
+        end
+        
+        function onKnobValueChange(app, ~)
+            app.register();
         end
         
         function onStartup(app)
@@ -675,10 +677,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             [optimizer, metric] = imregconfig('multimodal');
             
             optimizer.MaximumIterations = ...
-                optimizer.MaximumIterations * app.INITIAL_RADIUS_INCREASE_FACTOR;
+                round(app.registrationIterationsKnob.Value);
             
             optimizer.InitialRadius = ...
-                optimizer.InitialRadius / app.INITIAL_RADIUS_REDUCTION_FACTOR;
+                app.registrationRadiusKnob.Value;
 
             registeredImage = imregister( ...
                 app.movingImage, ...
