@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.2.0                                         *
+    % * Version (Git tag): 0.2.1                                         *
     % *                                                                  *
     % ********************************************************************
   
@@ -33,6 +33,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Constant)
+        INITIAL_RADIUS_REDUCTION_FACTOR = 3.5;
+        INITIAL_RADIUS_INCREASE_FACTOR = 3;
         IMAGE_FILE_EXTENSIONS_WHITELIST = '*.jpg;*.tif;*.png;*.gif';
     end
     
@@ -514,10 +516,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             };
             [f, p] = uigetfile(imageFileUploadSpecification);
             
-            % https://uk.mathworks.com/matlabcentral/answers/317676-uigetfile-will-make-app-be-behind-another-windows
-            app.window.Visible = 'off'; 
-            app.window.Visible = 'on';
-            
             if (ischar(p))
                app.updateMovingImageLoadButtonText( ...
                    app.MOVING_IMAGE_LOAD_BUTTON_TITLE_RELOAD ...
@@ -537,11 +535,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                 app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
                 'All recognised image files' ...
             };
-            [f, p] = uigetfile(imageFileUploadSpecification);
-            
-            % https://uk.mathworks.com/matlabcentral/answers/317676-uigetfile-will-make-app-be-behind-another-windows
-            app.window.Visible = 'off'; 
-            app.window.Visible = 'on';            
+            [f, p] = uigetfile(imageFileUploadSpecification);          
             
             if (ischar(p))
                app.updateTargetImageLoadButtonText( ...
@@ -632,7 +626,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             end   
         end 
         
-        function updateRegistrationRegisteredImageViewer(app, registeredImage)
+        function updateRegistrationRegisteredImageViewer( ...
+            app, ...
+            registeredImage ...
+        )
              app.info( ...
                  'updateRegistrationRegisteredImageViewer.', ...
                  true ...
@@ -661,6 +658,12 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
          
             [optimizer, metric] = imregconfig('multimodal');
             
+            optimizer.MaximumIterations = ...
+                optimizer.MaximumIterations * app.INITIAL_RADIUS_INCREASE_FACTOR;
+            
+            optimizer.InitialRadius = ...
+                optimizer.InitialRadius / app.INITIAL_RADIUS_REDUCTION_FACTOR;
+
             registeredImage = imregister( ...
                 app.movingImage, ...
                 app.targetImage, ...
