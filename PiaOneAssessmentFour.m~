@@ -7,8 +7,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.1.1                                         *
-    % *                                                                  *
     % ********************************************************************
   
     % ********************************************************************  
@@ -67,7 +65,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Access = public)
         buttonLoadImage      matlab.ui.control.Button
-        imageViewer          matlab.ui.control.UIAxes
+        imageViewer          matlab.ui.Figure
         window               matlab.ui.Figure
     end
     
@@ -129,17 +127,16 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.info('Creating the child compomnents for the window.');
             
             app.createChildComponentLoadImageButton();
-            app.createChildComponentImageViewer();
         end
         
-        function createChildComponentImageViewer(app)
-            app.info('Creating the Image Viewer compomnent.');
+        function createChildComponentImageView(app)
+            app.info('Creating the Load Image Button child compomnent.');
             app.imageViewer = uiaxes(app.window);
-
-            app.imageViewer.Position = app.IMAGE_VIEWER_POSITION;   
+            
             app.imageViewer.XTick = [];
             app.imageViewer.XTickLabel = {'[ ]'};
             app.imageViewer.YTick = [];
+            app.imageViewer.Position = app.IMAGE_VIEWER_POSITION;   
         end
         
         function createChildComponentLoadImageButton(app)
@@ -169,15 +166,16 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         function onButtonLoadImageClick(app, ~)
             app.info('Creating the Load Image Button child compomnent.');   
 
-            imageFileUploadSpecification = { ...
+            filterspec = { ...
                 app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
                 'All recognised image files' ...
             };
-            [f, p] = uigetfile(imageFileUploadSpecification);
+            [~, p] = uigetfile(filterspec);
             
+            % Make sure user didn't cancel uigetfile dialog
             if (ischar(p))
-               imageFilePath = [p f];
-               app.showImage(imageFilePath);
+               % fname = [p f];
+               % updateimage(app, fname);
             end
         end
         
@@ -186,22 +184,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end  
     end   
   
-    % ********************************************************************  
-    % *                                                                  *
-    % * 5. PRIVATE IMAGE FUNCTIONS                                       *
-    % *                                                                  *
-    % ********************************************************************
-    
-    methods (Access = private)
-        
-        function showImage(app, imageFilePath)
-            app.info('Showing the image.');
-  
-            image = imread(imageFilePath);
-            imagesc(app.imageViewer,image);
-        end
-    end
-    
     % ********************************************************************  
     % *                                                                  *
     % * 5. PRIVATE UTILITY FUNCTIONS                                     *
