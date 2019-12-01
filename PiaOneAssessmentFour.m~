@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.1.8                                         *
+    % * Version (Git tag): 0.1.7                                         *
     % *                                                                  *
     % ********************************************************************
   
@@ -205,7 +205,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = public)
 
         function app = PiaOneAssessmentFour
-            app.info('PiaOneAssessmentFour constructor.', false);
+            app.info('PiaOneAssessmentFour constructor.');
             app.clearCommandWindow();
             
             app.createWindow();
@@ -278,16 +278,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.tabLogger.Title = app.TAB_LOGGER_TITLE;
         end
         
-        function createChildComponentTabRegistration(app)
-            app.info( ...
-                'Creating the tabRegistration child compomnent.', ...
-                false ...
-            );
-            
-            app.tabRegistration = uitab(app.tabGroup);
-            app.tabRegistration.Title = app.TAB_REGISTRATION_TITLE;
-        end
-        
         function createChildComponentLogger(app)
             app.info('Creating the logger child compomnent.', false);
             
@@ -303,8 +293,18 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                 app.LOGGER_LABEL_TEXT;
             
             app.logger = uilabel(app.tabLogger);
-            app.logger.Text = app.LOGGER_TEXT_DEFAULT;
+            app.Logger.Text = app.LOGGER_TEXT_DEFAULT;
             app.logger.Position = app.LOGGER_POSITION;
+        end
+ 
+        function createChildComponentTabRegistration(app)
+            app.info( ...
+                'Creating the tabRegistration child compomnent.', ...
+                true ...
+            );
+            
+            app.tabRegistration = uitab(app.tabGroup);
+            app.tabRegistration.Title = app.TAB_REGISTRATION_TITLE;
         end
         
         function createChildComponentTargetImagePanel(app)
@@ -498,7 +498,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         function onButtonRegisterImageClick(app, ~)
              app.info( ...
                  'Callback: onButtonRegisterImageClick.', ...
-                 true ...
+                 t
              );
              
              app.performRegistration();
@@ -506,7 +506,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function onStartup(app)
-            app.info('Startup function.', false); 
+            app.info('Startup function.'); 
         end  
     end
     
@@ -518,18 +518,11 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = private)
 
         function updateMovingImageLoadButtonText(app, updatedText)
-             app.info( ...
-                 'updateMovingImageLoadButtonText.', ...
-                 true ...
-             );
             app.movingImageLoadButton.Text = updatedText;
         end
         
         function updateMovingImageViewer(app, movingImageFilePath)
-             app.info( ...
-                 'updateMovingImageViewer.', ...
-                 true ...
-            );            
+            
             try
                 app.movingImage = imread(movingImageFilePath);
             catch error
@@ -541,18 +534,11 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function updateTargetImageLoadButtonText(app, updatedText)
-             app.info( ...
-                 'updateTargetImageLoadButtonText.', ...
-                 true ...
-             );            
             app.targetImageLoadButton.Text = updatedText;
         end
         
         function updateTargetImageViewer(app, targetImageFilePath)
-             app.info( ...
-                 'updateTargetImageViewer.', ...
-                 true ...
-            );              
+            
             try
                 app.targetImage = imread(targetImageFilePath);
             catch error
@@ -572,7 +558,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = private)
 
         function clearCommandWindow(app)
-            app.info('Clearing the command window.', false);
+            app.info('Clearing the command window.');
             if (app.SHOULD_CLEAR_COMMAND_WINDOW == true)
                clc; 
             end    
