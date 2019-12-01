@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.1.6                                         *
+    % * Version (Git tag): 0.1.7                                         *
     % *                                                                  *
     % ********************************************************************
   
@@ -74,10 +74,12 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         TARGET_IMAGE_LOAD_BUTTON_POSITION = [125 308 100 22];
         TARGET_IMAGE_LOAD_BUTTON_TITLE = 'Load';
         TARGET_IMAGE_LOAD_BUTTON_TYPE = 'push';
+        
         TARGET_IMAGE_PANEL_FONT_SIZE = 14; 
         TARGET_IMAGE_PANEL_POSITION = [21 21 350 534]; 
         TARGET_IMAGE_PANEL_TITLE = 'Target image';
-        TARGET_IMAGE_POSITION = [0 350 350 147];
+        
+        TARGET_IMAGE_VIEWER_POSITION = [0 350 350 147];
     end
     
     % ********************************************************************  
@@ -89,10 +91,12 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         MOVING_IMAGE_LOAD_BUTTON_POSITION = [125 308 100 22];
         MOVING_IMAGE_LOAD_BUTTON_TITLE = 'Load';
         MOVING_IMAGE_LOAD_BUTTON_TYPE = 'push';
+        
         MOVING_IMAGE_PANEL_FONT_SIZE = 14; 
         MOVING_IMAGE_PANEL_POSITION = [396 21 350 534]; 
         MOVING_IMAGE_PANEL_TITLE = 'Moving image';
-        MOVING_IMAGE_POSITION = [1 350 349 147];
+        
+        MOVING_IMAGE_VIEWER_POSITION = [1 350 349 147];
     end
     
     % ********************************************************************  
@@ -115,6 +119,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         LOGGER_LABEL_HORIZONTAL_POSITION = 'right';
         LOGGER_LABEL_POSITION = [27 653 113 22];
         LOGGER_LABEL_TEXT = '';
+        
         LOGGER_POSITION = [155 378 1062 299];
     end    
             
@@ -152,7 +157,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        targetImage                 matlab.ui.control.Image
+        targetImage                 
+        targetImageViewer           matlab.ui.control.UIAxes
         targetImageLoadButton       matlab.ui.control.Button
         targetImagePanel            matlab.ui.container.Panel        
     end
@@ -163,7 +169,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        movingImage                 matlab.ui.control.Image
+        movingImage                 
+        movingImageViewer           matlab.ui.control.UIAxes
         movingImageLoadButton       matlab.ui.control.Button
         movingImagePanel            matlab.ui.container.Panel       
     end
@@ -287,12 +294,16 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.targetImagePanel.Position = ...
                 app.TARGET_IMAGE_PANEL_POSITION;
 
-            app.targetImage = ...
-                uiimage(app.targetImagePanel);
+            app.targetImageViewer = ...
+                uiaxes(app.targetImagePanel);
             
-            app.targetImage.Position = ...
-                app.TARGET_IMAGE_POSITION;
+            app.targetImageViewer.Position = ...
+                app.TARGET_IMAGE_VIEWER_POSITION;
 
+            app.targetImageViewer.XTick = [];
+            app.targetImageViewer.XTickLabel = {'[ ]'};
+            app.targetImageViewer.YTick = [];
+            
             app.targetImageLoadButton = uibutton( ...
                 app.targetImagePanel, ...
                 app.TARGET_IMAGE_LOAD_BUTTON_TYPE ...
@@ -327,12 +338,16 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.movingImagePanel.Position = ...
                 app.MOVING_IMAGE_PANEL_POSITION;
 
-            app.movingImage = ...
-                uiimage(app.movingImagePanel);
+            app.movingImageViewer = ...
+                uiaxes(app.movingImagePanel);
             
-            app.movingImage.Position = ...
-                app.MOVING_IMAGE_POSITION;
+            app.movingImageViewer.Position = ...
+                app.MOVING_IMAGE_VIEWER_POSITION;
 
+            app.movingImageViewer.XTick = [];
+            app.movingImageViewer.XTickLabel = {'[ ]'};
+            app.movingImageViewer.YTick = [];
+            
             app.movingImageLoadButton = uibutton( ...
                 app.movingImagePanel, ...
                 app.MOVING_IMAGE_LOAD_BUTTON_TYPE ...
@@ -439,10 +454,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             [f, p] = uigetfile(imageFileUploadSpecification);
             
             if (ischar(p))
-               imageFilePath = [p f];
-               % app.updateImagePathLabel(imageFilePath);
-               % app.updateImageTypeLabel(imageFilePath);
-               % app.updateImageViewer(imageFilePath);
+               targetImageFilePath = [p f];
+               app.updateTargetImageViewer(targetImageFilePath);
             end
         end
         
@@ -463,6 +476,20 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * 5. PRIVATE IMAGE FUNCTIONS                                       *
     % *                                                                  *
     % ********************************************************************
+    methods (Access = private)
+        
+        function updateTargetImageViewer(app, targetImageFilePath)
+            
+            try
+                app.targetImage = imread(targetImageFilePath);
+            catch error
+                uialert(app.window, error.message, 'Image Error');
+                return;
+            end 
+ 
+            imagesc(app.targetImageViewer, app.targetImage);  
+        end
+    end
     
     % ********************************************************************  
     % *                                                                  *
