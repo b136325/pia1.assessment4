@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.1.2                                         *
+    % * Version (Git tag): 0.1.4                                         *
     % *                                                                  *
     % ********************************************************************
   
@@ -46,6 +46,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         BUTTON_LOAD_IMAGE_TEXT = 'Load image';
         BUTTON_LOAD_IMAGE_TYPE = 'push';
         
+        BUTTON_REGISTER_IMAGE_POSITION = [109 150 225 22];
+        BUTTON_REGISTER_IMAGE_TEXT = 'Register image';
+        BUTTON_REGISTER_IMAGE_TYPE = 'push';
+        
         IMAGE_FILE_PATH_LABEL_DEFAULT_TEXT = '';
         IMAGE_FILE_PATH_LABEL_HORIZONTAL_ALIGNMENT = 'right';
         IMAGE_FILE_PATH_LABEL_POSITION = [109 126 106 22];
@@ -69,6 +73,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Constant)
         USE_BUTTON_LOAD_IMAGE = true;
+        USE_BUTTON_REGISTER_IMAGE = true;
         USE_IMAGE_FILE_PATH_LABEL = true;
         USE_IMAGE_FILE_TYPE_LABEL = true;
         USE_IMAGE_VIEWER = true;
@@ -87,6 +92,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Access = public)
         buttonLoadImage      matlab.ui.control.Button
+        buttonRegisterImage  matlab.ui.control.Button
+        image
         imageFilePathLabel   matlab.ui.control.Label
         imageFileTypeLabel   matlab.ui.control.Label
         imageViewer          matlab.ui.control.UIAxes
@@ -152,6 +159,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             
             if (app.USE_BUTTON_LOAD_IMAGE == true)
                 app.createChildComponentLoadImageButton();
+            end
+            
+            if (app.USE_BUTTON_REGISTER_IMAGE == true)
+                app.createChildComponentRegisterImageButton();
             end
             
             if (app.USE_IMAGE_FILE_PATH_LABEL == true)
@@ -222,6 +233,27 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.buttonLoadImage.Position = app.BUTTON_LOAD_IMAGE_POSITION;
             app.buttonLoadImage.Text = app.BUTTON_LOAD_IMAGE_TEXT;
         end
+        
+        function createChildComponentRegisterImageButton(app)
+            app.info( ...
+                'Creating the Register Image Button child compomnent.' ...
+            );
+            
+            app.buttonRegisterImage = uibutton( ...
+                app.window, ...
+                app.BUTTON_REGISTER_IMAGE_TYPE ...
+            );
+            app.buttonRegisterImage.ButtonPushedFcn = createCallbackFcn( ...
+                app, ...
+                @onButtonRegisterImageClick, ...
+                true ...
+            );
+            app.buttonRegisterImage.Position ...
+                = app.BUTTON_REGISTER_IMAGE_POSITION;
+            
+            app.buttonRegisterImage.Text ...
+                = app.BUTTON_REGISTER_IMAGE_TEXT;
+        end        
     end
     
     % ********************************************************************  
@@ -232,7 +264,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = private)
         
         function onButtonLoadImageClick(app, ~)
-            app.info('Creating the Load Image Button child compomnent.');   
+            app.info('Callback: onButtonLoadImageClick.');   
 
             imageFileUploadSpecification = { ...
                 app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
@@ -248,6 +280,13 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             end
         end
         
+        function onButtonRegisterImageClick(app, ~)
+             app.info('Callback: onButtonRegisterImageClick.');
+             
+             app.performRegistration();
+             
+        end
+        
         function onStartup(app)
             app.info('Startup function.'); 
         end  
@@ -260,6 +299,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     
     methods (Access = private)
+        
+        function performRegistration(app) 
+            app.info('Perform registration');
+        end
         
         function updateImagePathLabel(app, imageFilePath)
             app.info('Update the imageFilePath label.');
@@ -280,15 +323,14 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         function updateImageViewer(app, imageFilePath)
             
             try
-                image = imread(imageFilePath);
-            catch e
-                % If problem reading image, display error message
-                uialert(app.UIFigure, e.message, 'Image Error');
+                app.image = imread(imageFilePath);
+            catch error
+                uialert(app.UIFigure, error.message, 'Image Error');
                 return;
             end 
   
             if (app.USE_IMAGE_VIEWER == true)
-                imagesc(app.imageViewer,image);
+                imagesc(app.imageViewer, app.image);
             end    
         end
     end
