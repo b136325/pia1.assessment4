@@ -7,7 +7,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.1.8                                         *
+    % * Version (Git tag): 0.1.9                                         *
     % *                                                                  *
     % ********************************************************************
   
@@ -107,6 +107,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Constant)
+        REGISTER_BUTTON_POSITION = [125 308 100 22];
+        REGISTER_BUTTON_TITLE_DEFAULT = 'Register';
+        REGISTER_BUTTON_TYPE = 'push';        
+        
         REGISTRATION_OPTIONS_PANEL_FONT_SIZE = 14;
         REGISTRATION_OPTIONS_PANEL_POSITION = [775 21 444 534];
         REGISTRATION_OPTIONS_PANEL_TITLE = 'Registration options';
@@ -184,7 +188,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        registrationOptionsPanel    matlab.ui.container.Panel       
+        registerButton              matlab.ui.control.Button
+        registrationOptionsPanel    matlab.ui.container.Panel 
     end
     
     % ********************************************************************  
@@ -350,7 +355,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.targetImageLoadButton.ButtonPushedFcn = ...
                 createCallbackFcn( ...
                     app, ...
-                    @onButtonLoadTargetImageClick, ...
+                    @onButtonClickLoadTargetImage, ...
                     true ...
                 );
         end
@@ -398,7 +403,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.movingImageLoadButton.ButtonPushedFcn = ...
                 createCallbackFcn( ...
                     app, ...
-                    @onButtonLoadMovingImageClick, ...
+                    @onButtonClickLoadMovingImage, ...
                     true ...
                 );            
         end
@@ -420,6 +425,23 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             
             app.registrationOptionsPanel.Position = ...
                 app.REGISTRATION_OPTIONS_PANEL_POSITION;
+            
+            app.registerButton = uibutton( ...
+                app.registrationOptionsPanel, ...
+                app.REGISTER_BUTTON_TYPE ...
+            );
+            app.registerButton.Position = ...
+                app.REGISTER_BUTTON_POSITION;
+            
+            app.registerButton.Text = ...
+                app.REGISTER_BUTTON_TITLE_DEFAULT;  
+            
+            app.registerButton.ButtonPushedFcn = ...
+                createCallbackFcn( ...
+                    app, ...
+                    @onButtonClickRegister, ...
+                    true ...
+                );              
         end
         
         function createChildComponentInstructions(app)
@@ -453,9 +475,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     methods (Access = private)
         
-        function onButtonLoadMovingImageClick(app, ~)
+        function onButtonClickLoadMovingImage(app, ~)
             app.info( ...
-                'Callback: onButtonLoadMovingImageClick.', ...
+                'Callback: onButtonClickLoadMovingImage.', ...
                 true ...
             );   
 
@@ -474,9 +496,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             end
         end
         
-        function onButtonLoadTargetImageClick(app, ~)
+        function onButtonClickLoadTargetImage(app, ~)
             app.info( ...
-                'Callback: onButtonLoadTargetImageClick.', ...
+                'Callback: onButtonClickLoadTargetImage.', ...
                 true ...
             );   
 
@@ -495,13 +517,13 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             end
         end
         
-        function onButtonRegisterImageClick(app, ~)
+        function onButtonClickRegister(app, ~)
              app.info( ...
                  'Callback: onButtonRegisterImageClick.', ...
                  true ...
              );
              
-             app.performRegistration();
+             app.register();
              
         end
         
@@ -564,6 +586,20 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
     end
     
+    % ********************************************************************  
+    % *                                                                  *
+    % * 6. PRIVATE REGISTRATION FUNCTIONS                                *
+    % *                                                                  *
+    % ********************************************************************    
+    
+    methods (Access = private)
+
+        function register(app)
+            app.info('Register.', true);
+  
+        end               
+    end     
+        
     % ********************************************************************  
     % *                                                                  *
     % * 6. PRIVATE UTILITY FUNCTIONS                                     *
