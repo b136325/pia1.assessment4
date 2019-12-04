@@ -14,7 +14,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * MatLab version: R2019b                                           *
     % * OS: Mac OS Catalina (10.15)                                      *
     % *                                                                  *
-    % * Revision (Git tag): 0.3.1                                        *
+    % * Revision (Git tag): 0.3.2                                        *
     % *                                                                  *
     % ********************************************************************
     % *                                                                  *
@@ -90,7 +90,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Constant)
         TAB_GROUP_POSITION = [19 19 1244 725];
-        TAB_LOGGER_TITLE = 'Logger';
         TAB_REGISTRATION_TITLE = 'Register image';
     end    
     
@@ -158,23 +157,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         REGISTRATION_OPTIONS_PANEL_POSITION = [775 21 444 534];
         REGISTRATION_OPTIONS_PANEL_TITLE = 'Registration options';
     end
-    
-    % ********************************************************************  
-    % *                                                                  *
-    % * 1.e CONSTANTS: Logger and label.                                 *
-    % *                                                                  *
-    % ********************************************************************
-    properties (Constant)
-        
-        % Logger label constants.
-        LOGGER_LABEL_HORIZONTAL_POSITION = 'right';
-        LOGGER_LABEL_POSITION = [27 653 113 22];
-        LOGGER_LABEL_TEXT = '';
-        
-        % Logger constants.
-        LOGGER_TEXT_DEFAULT = '';
-        LOGGER_POSITION = [155 378 1062 299];
-    end    
             
     % ********************************************************************  
     % *                                                                  *
@@ -243,17 +225,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         registrationOptionsPanel            matlab.ui.container.Panel
         registrationRadiusKnob              matlab.ui.control.Knob
         registrationRegisteredImageViewer   matlab.ui.control.UIAxes
-    end
-    
-    % ********************************************************************  
-    % *                                                                  *
-    % * 2.f PUBLIC PROPERTIES: Logger.                                   *
-    % *                                                                  *
-    % ********************************************************************
-    properties (Access = public)
-        logger                              matlab.ui.control.Label
-        loggerLabel                         matlab.ui.control.Label
-    end        
+    end       
 
     % ********************************************************************  
     % *                                                                  *
@@ -263,7 +235,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = public)
 
         function app = PiaOneAssessmentFour
-            app.info('PiaOneAssessmentFour constructor.', false);
+            app.info('PiaOneAssessmentFour constructor.');
             app.clearCommandWindow();
             
             app.createWindow();
@@ -276,7 +248,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
 
         function delete(app)
-            app.info('PiaOneAssessmentFour delete.', false);
+            app.info('PiaOneAssessmentFour delete.');
             delete(app.window)
         end
     end
@@ -289,10 +261,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = private)
         
         function onButtonClickLoadMovingImage(app, ~)
-            app.info( ...
-                'Callback: onButtonClickLoadMovingImage.', ...
-                true ...
-            );   
+            app.info('Callback: onButtonClickLoadMovingImage.');   
 
             imageFileUploadSpecification = { ...
                 app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
@@ -310,10 +279,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function onButtonClickLoadTargetImage(app, ~)
-            app.info( ...
-                'Callback: onButtonClickLoadTargetImage.', ...
-                true ...
-            );   
+            app.info('Callback: onButtonClickLoadTargetImage.');   
 
             imageFileUploadSpecification = { ...
                 app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
@@ -335,7 +301,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function onStartup(app)
-            app.info('PiaOneAssessmentFour startup.', false); 
+            app.info('PiaOneAssessmentFour startup.'); 
         end  
     end
     
@@ -347,18 +313,12 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = private)
 
         function updateMovingImageLoadButtonText(app, updatedText)
-             app.info( ...
-                 'updateMovingImageLoadButtonText.', ...
-                 true ...
-             );
+            app.info('updateMovingImageLoadButtonText.');
             app.movingImageLoadButton.Text = updatedText;
         end
         
         function updateMovingImageViewer(app, movingImageFilePath)
-             app.info( ...
-                 'updateMovingImageViewer.', ...
-                 true ...
-            );            
+            app.info('updateMovingImageViewer.');            
             try
                 app.movingImageOriginal = app.loadImage( ...
                     movingImageFilePath ...
@@ -378,18 +338,12 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
   
         function updateTargetImageLoadButtonText(app, updatedText)
-             app.info( ...
-                 'updateTargetImageLoadButtonText.', ...
-                 true ...
-             );            
+            app.info('updateTargetImageLoadButtonText.');            
             app.targetImageLoadButton.Text = updatedText;
         end
         
         function updateTargetImageViewer(app, targetImageFilePath)
-             app.info( ...
-                 'updateTargetImageViewer.', ...
-                 true ...
-            );              
+            app.info('updateTargetImageViewer.');              
             try
                 app.targetImageOriginal = app.loadImage( ...
                     targetImageFilePath ...
@@ -409,10 +363,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end 
         
         function updateRegistrationCombinedImageViewer(app)
-            app.info( ...
-                'updateRegistrationCombinedImageViewer.', ...
-                true ...
-           );              
+            app.info('updateRegistrationCombinedImageViewer.');              
 
            if (~isempty(app.movingImageShown) ... 
                    && ~isempty(app.targetImageShown))     
@@ -454,10 +405,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = private)
 
         function registeredImage = register(app)            
-            app.info( ...
-                 'Register.', ...
-                 true ...
-             );
+            app.info('Register.');
          
             [optimizer, metric] = imregconfig('multimodal');
             
@@ -489,14 +437,14 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = private)
 
         function clearCommandWindow(app)
-            app.info('Clearing the command window.', false);
+            app.info('Clearing the command window.');
             if (app.SHOULD_CLEAR_COMMAND_WINDOW == true)
                clc; 
             end    
         end
         
         function convertedImage = convertToGrey(app, imageFilePath)
-            app.info('Convert to grey.', true);
+            app.info('Convert to grey.');
 
             [imageToConvert, map] = imread(imageFilePath);   
             [~, ~, numberOfColourChannels] = size(imageToConvert);
@@ -512,18 +460,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             end
         end
         
-        function info(app, message, shouldLogInfo)
+        function info(app, message)
             if (app.SHOW_INFO_FLAG == true)
-                disp(message);
-
-                if (shouldLogInfo == true)
-                    loggerText = strcat( ... 
-                        app.logger.Text, ...
-                        '\n\', ...
-                        message ...
-                    );
-                    app.logger.Text = loggerText;
-                end                   
+                disp(message);                  
             end 
         end
         
@@ -533,7 +472,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             catch
                 
                 try
-                   info = dicominfo(imageFilePath);
+                   % info = dicominfo(imageFilePath);
                    image = dicomread(imageFilePath);
                 catch
                     
@@ -560,7 +499,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = private)
 
         function createWindow(app)
-            app.info('Creating the window', false);
+            app.info('Creating the window');
             
             app.window ...
                 = uifigure('Visible', 'off');
@@ -575,14 +514,9 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function createChildComponents(app)
-            app.info( ...
-                'Creating the child compomnents for the window.', ...
-                false ...
-            );
+            app.info('Creating the child compomnents for the window.');
             
             app.createChildComponentTabGroup();
-            app.createChildComponentTabLogger();
-            app.createChildComponentLogger();
 
             app.createChildComponentTabRegistration();
             app.createChildComponentInstructions();
@@ -594,53 +528,21 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function createChildComponentTabGroup(app)
-            app.info('Creating the tabGroup child compomnent.', false);
+            app.info('Creating the tabGroup child compomnent.');
             
             app.tabGroup = uitabgroup(app.window);
             app.tabGroup.Position = app.TAB_GROUP_POSITION;
         end
         
-        function createChildComponentTabLogger(app)
-            app.info('Creating the tabLogger child compomnent.', false);
-            
-            app.tabLogger = uitab(app.tabGroup);
-            app.tabLogger.Title = app.TAB_LOGGER_TITLE;
-        end
-        
         function createChildComponentTabRegistration(app)
-            app.info( ...
-                'Creating the tabRegistration child compomnent.', ...
-                false ...
-            );
+            app.info('Creating the tabRegistration child compomnent.');
             
             app.tabRegistration = uitab(app.tabGroup);
             app.tabRegistration.Title = app.TAB_REGISTRATION_TITLE;
         end
         
-        function createChildComponentLogger(app)
-            app.info('Creating the logger child compomnent.', false);
-            
-            app.loggerLabel = uilabel(app.tabLogger);
-            
-            app.loggerLabel.HorizontalAlignment = ...
-                app.LOGGER_LABEL_HORIZONTAL_POSITION;
-            
-            app.loggerLabel.Position = ...
-                app.LOGGER_LABEL_POSITION;
-            
-            app.loggerLabel.Text = ...
-                app.LOGGER_LABEL_TEXT;
-            
-            app.logger = uilabel(app.tabLogger);
-            app.logger.Text = app.LOGGER_TEXT_DEFAULT;
-            app.logger.Position = app.LOGGER_POSITION;
-        end
-        
         function createChildComponentTargetImagePanel(app)
-            app.info( ...
-                'Creating the targetImagePanel child compomnent.', ...
-                true ...
-            );
+            app.info('Creating the targetImagePanel child compomnent.');
             
             app.targetImagePanel = ...
                 uipanel(app.tabRegistration);
@@ -685,10 +587,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function createChildComponentMovingImagePanel(app)
-            app.info( ...
-                'Creating the movingImagePanel child compomnent.', ...
-                true ...
-            );
+            app.info('Creating the movingImagePanel child compomnent.');
             
             app.movingImagePanel = ...
                 uipanel(app.tabRegistration);
@@ -733,10 +632,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function createChildComponentRegistrationOptionsPanel(app)
-            app.info( ...
-                'Creating registrationOptionsPanel.', ...
-                true ...
-            );                
+            app.info('Creating registrationOptionsPanel.');                
         
             app.registrationOptionsPanel = ...
                 uipanel(app.tabRegistration);
@@ -805,10 +701,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function createChildComponentInstructions(app)
-            app.info( ...
-                'Creating the instructions child compomnent.', ...
-                true ...
-            );
+            app.info('Creating the instructions child compomnent.');
             
             app.instructions = uilabel(app.tabRegistration);
             app.instructions.Position = app.INSTRUCTIONS_POSITION;
@@ -816,10 +709,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function createChildComponentTitle(app)
-            app.info( ...
-                'Creating the title child compomnent.', ...
-                true ...
-            );
+            app.info('Creating the title child compomnent.');
             
             app.title = uilabel(app.window);
             app.title.FontSize = app.TITLE_FONT_SIZE;
