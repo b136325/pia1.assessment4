@@ -14,7 +14,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * MatLab version: R2019b                                           *
     % * OS: Mac OS Catalina (10.15)                                      *
     % *                                                                  *
-    % * Revision (Git tag): 0.3.5                                        *
+    % * Revision (Git tag): 0.3.6                                        *
     % *                                                                  *
     % ********************************************************************
     % *                                                                  *
@@ -74,13 +74,13 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         
         % Title constants.
         TITLE_FONT_SIZE = 20;
-        TITLE_POSITION = [19 757 179 26];
-        TITLE_TEXT = 'PIA1 Assessment 4';        
+        TITLE_POSITION = [19 757 400 26];
+        TITLE_TEXT = 'PIA1 Assessment 4 - Student ID: S1888637.';        
         
         % Window constants.
         WINDOW_AUTO_RESIZE_CHILDREN = 'off';
         WINDOW_POSITION = [100 100 1280 800];
-        WINDOW_TITLE = 'PIA1 Assessment 4';         
+        WINDOW_TITLE = 'PIA1 Assessment 4 - Student ID: S1888637.';         
     end
 
     % ********************************************************************  
@@ -90,7 +90,12 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Constant)
         TAB_GROUP_POSITION = [19 19 1244 725];
-        TAB_REGISTRATION_TITLE = 'Register image';
+        TAB_REGISTRATION_TITLE = ...
+            strcat( ...
+                'Register an automatically generated "moving" ', ...
+                ' image and manipulate the intensity of the ', ...
+                ' "target" image.' ...
+            );
     end    
     
     % ********************************************************************  
@@ -109,7 +114,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         % Target image panel constants.
         TARGET_IMAGE_PANEL_FONT_SIZE = 14; 
         TARGET_IMAGE_PANEL_POSITION = [21 21 350 534]; 
-        TARGET_IMAGE_PANEL_TITLE = 'Target image';
+        TARGET_IMAGE_PANEL_TITLE = '1. Load the "target" image.';
         
         % Target image viewer.
         TARGET_IMAGE_VIEWER_POSITION = [0 350 350 147];
@@ -129,7 +134,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         % Moving image panel constants.
         MOVING_IMAGE_PANEL_FONT_SIZE = 14; 
         MOVING_IMAGE_PANEL_POSITION = [396 21 350 534]; 
-        MOVING_IMAGE_PANEL_TITLE = 'Automatically generated moving image';
+        MOVING_IMAGE_PANEL_TITLE = ...
+            '2. An automatically generated "moving" image.';
         
         % Moving image viewer constants.
         MOVING_IMAGE_VIEWER_POSITION = [1 350 349 147];
@@ -146,9 +152,12 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         REGISTRATION_COMBINED_IMAGE_VIEWER_POSITION = [2 350 349 147];
         REGISTRATION_REGISTERED_IMAGE_VIEWER_POSITION = [2 050 349 147];
         
-        % Registration knob constants.
+        % Registration iteration knob constants.
+        REGISTRATION_ITERATIONS_KNOB_DEFAULT = 100;
+        REGISTRATION_ITERATIONS_KNOW_LIMITS = [1, 1000];
         REGISTRATION_ITERATIONS_KNOB_POSITION = [80 260 50 50];
 
+        % Registration max step knob constants.        
         REGISTRATION_MAX_STEP_KNOB_DEFAULT = 0.0625;
         REGISTRATION_MAX_STEP_KNOB_POSITION = [260 260 50 50];
         REGISTRATION_MAX_STEP_KNOW_LIMITS = [0.01, 1];
@@ -156,7 +165,12 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         % Registration options panel constants.
         REGISTRATION_OPTIONS_PANEL_FONT_SIZE = 14;
         REGISTRATION_OPTIONS_PANEL_POSITION = [775 21 444 534];
-        REGISTRATION_OPTIONS_PANEL_TITLE = 'Registration options';
+        REGISTRATION_OPTIONS_PANEL_TITLE = ...
+            '3. Estimated registration for the "moving" image.';
+        
+        REGISTRATION_LABEL_FONT_SIZE = 14;  
+        REGISTRATION_LABEL_POSITION = [10 150 349 147];
+        REGISTRATION_LABEL_TEXT = '4. The registered image.';        
     end
             
     % ********************************************************************  
@@ -220,8 +234,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         registrationEstimate
         registrationIterationsKnob          matlab.ui.control.Knob
         registrationOptionsPanel            matlab.ui.container.Panel
-        registrationMaxStepKnob              matlab.ui.control.Knob
+        registrationMaxStepKnob             matlab.ui.control.Knob
+        registrationRegisteredImageLabel    matlab.ui.control.Label
         registrationRegisteredImageViewer   matlab.ui.control.UIAxes
+
     end       
 
     % ********************************************************************  
@@ -635,8 +651,11 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.registrationIterationsKnob = ...
                 uiknob(app.registrationOptionsPanel);
             
-            app.registrationIterationsKnob.Limits = [1, 1000];
-            app.registrationIterationsKnob.Value = 100;
+            app.registrationIterationsKnob.Limits = ...
+                app.REGISTRATION_ITERATIONS_KNOW_LIMITS;
+            
+            app.registrationIterationsKnob.Value = ...
+                app.REGISTRATION_ITERATIONS_KNOB_DEFAULT;
             
             app.registrationIterationsKnob.Position = ...
                 app.REGISTRATION_ITERATIONS_KNOB_POSITION;
@@ -665,7 +684,19 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                     app, ...
                     @onKnobValueChange, ...
                     true ...
-                );  
+                );
+            
+            app.registrationRegisteredImageLabel = ...
+                uilabel(app.registrationOptionsPanel);
+            
+            app.registrationRegisteredImageLabel.FontSize = ...
+                app.REGISTRATION_LABEL_FONT_SIZE;
+            
+            app.registrationRegisteredImageLabel.Position = ...
+                app.REGISTRATION_LABEL_POSITION;
+            
+            app.registrationRegisteredImageLabel.Text = ...
+                app.REGISTRATION_LABEL_TEXT;            
             
         end
         
