@@ -121,10 +121,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Constant)
-        % Image manipulation constants.
-        MOVING_IMAGE_MANIPULATION_SC = 2.3;
-        MOVING_IMAGE_MANIPULATION_SH = 0.5;        
-        MOVING_IMAGE_MANIPULATION_THETA = 170;
         
         % Moving image panel constants.
         MOVING_IMAGE_PANEL_FONT_SIZE = 14; 
@@ -290,21 +286,18 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         function updateMovingImageViewer(app, targetImage)
             app.info('updateMovingImageViewer.');            
 
-            theta = app.MOVING_IMAGE_MANIPULATION_THETA;
-            rotation = [ ...
-                cosd(theta) sind(theta) 0;... 
-                sind(theta) cosd(theta) 0;... 
-                0 0 1 ...
-            ]; 
-            sc = app.MOVING_IMAGE_MANIPULATION_SC;
-            scale = [sc 0 0; 0 sc 0; 0 0 1]; 
-            
-            sh = app.MOVING_IMAGE_MANIPULATION_SH;
-            shear = [1 sh 0; 0 1 0; 0 0 1]; 
+theta = 170;
+rot = [cosd(theta) sind(theta) 0;... 
+    sind(theta) cosd(theta) 0;... 
+    0 0 1]; 
+sc = 2.3;
+scale = [sc 0 0; 0 sc 0; 0 0 1]; 
+sh = 0.5;
+shear = [1 sh 0; 0 1 0; 0 0 1]; 
 
-            tform = affine2d(shear * scale * rotation);
-       
-            app.movingImage = imwarp(targetImage, tform);
+tform = affine2d(shear*scale*rot);
+moving = imwarp(fixed,tform);            
+            app.movingImage = targetImage;
             imagesc(app.movingImageViewer, app.movingImage);
         end
   
