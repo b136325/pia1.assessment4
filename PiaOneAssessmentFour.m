@@ -14,7 +14,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * MatLab version: R2019b                                           *
     % * OS: Mac OS Catalina (10.15)                                      *
     % *                                                                  *
-    % * Revision (Git tag): 0.4.0                                        *
+    % * Revision (Git tag): 0.4.1                                        *
     % *                                                                  *
     % ********************************************************************
     % *                                                                  *
@@ -372,7 +372,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.info('updateTargetImageViewer.');
             app.info(targetImageFilePath);
             
-            if (targetImageFilePath ~= false)
+            if (ischar(targetImageFilePath))
                 try
                     app.targetImageOriginal = app.loadImage( ...
                         targetImageFilePath ...
