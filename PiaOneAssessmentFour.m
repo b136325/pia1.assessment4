@@ -7,10 +7,32 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * Student ID: S1888637                                             *
     % * Date: 30th November 2019                                         *
     % *                                                                  *
-    % * Version (Git tag): 0.2.3                                         *
+    % ********************************************************************
+    % *                                                                  *
+    % * DEVELOPMENT INFO                                                 *
+    % *                                                                  *
+    % * MatLab version: R2019b                                           *
+    % * OS: Mac OS Catalina (10.15)                                      *
+    % *                                                                  *
+    % * Revision (Git tag): 0.3.0                                        *
     % *                                                                  *
     % ********************************************************************
-  
+    % *                                                                  *
+    % * OVERVIEW                                                         *
+    % *                                                                  *
+    % * The code with this MatLab class has been divided into the follo- *
+    % * -wing sections:                                                  *
+    % * 1. Constants                                                     *
+    % * 2. Properties                                                    *
+    % * 3. Public functions, including the class constructor             *
+    % * 4. Private event (callback) functions                            *
+    % * 5. Private update functions (usually triggered by a callback)    *
+    % * 6. Private registration functions                                *
+    % * 7. Private utility functions                                     *
+    % * 8. Private create GUI component functions                        *
+    % *                                                                  *
+    % ********************************************************************
+                                                                        
     % ********************************************************************  
     % *                                                                  *
     % * 1. CONSTANTS.                                                    *
@@ -35,7 +57,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     properties (Constant)
         INITIAL_RADIUS_REDUCTION_FACTOR = 3.5;
         INITIAL_RADIUS_INCREASE_FACTOR = 3;
-        IMAGE_FILE_EXTENSIONS_WHITELIST = '*.jpg;*.tif;*.png;*.gif';
+        IMAGE_FILE_EXTENSIONS_WHITELIST = ...
+            '*.dcm;*.gif;*.jpeg;*.jpg;*.png;*.tif;*.tiff;';
     end
     
     % ********************************************************************  
@@ -44,13 +67,17 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     properties (Constant)
+        
+        % Instruction constants.
         INSTRUCTIONS_POSITION = [30 658 68 22];
         INSTRUCTIONS_TEXT = 'Instructions';
         
+        % Title constants.
         TITLE_FONT_SIZE = 20;
         TITLE_POSITION = [19 757 179 26];
         TITLE_TEXT = 'PIA1 Assessment 4';        
-       
+        
+        % Window constants.
         WINDOW_AUTO_RESIZE_CHILDREN = 'off';
         WINDOW_POSITION = [100 100 1280 800];
         WINDOW_TITLE = 'PIA1 Assessment 4';         
@@ -69,52 +96,69 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     
     % ********************************************************************  
     % *                                                                  *
-    % * 1.c CONSTANTS: Target image panel.                               *
+    % * 1.c CONSTANTS: Target image panel and children.                  *
     % *                                                                  *
     % ********************************************************************
     properties (Constant)
+        
+        % Target image constants.
         TARGET_IMAGE_LOAD_BUTTON_POSITION = [125 308 100 22];
         TARGET_IMAGE_LOAD_BUTTON_TITLE_DEFAULT = 'Load';
         TARGET_IMAGE_LOAD_BUTTON_TITLE_RELOAD = 'Reload';
         TARGET_IMAGE_LOAD_BUTTON_TYPE = 'push';
         
+        % Target image panel constants.
         TARGET_IMAGE_PANEL_FONT_SIZE = 14; 
         TARGET_IMAGE_PANEL_POSITION = [21 21 350 534]; 
         TARGET_IMAGE_PANEL_TITLE = 'Target image';
         
+        % Target image viewer.
         TARGET_IMAGE_VIEWER_POSITION = [0 350 350 147];
+
+        % Target Original or Converted Image Switch.
+        TARGET_ORIGINAL_OR_CONVERTED_SWITCH_ITEMS = ...
+            {'Original', 'Converted'};        
+        TARGET_ORIGINAL_OR_CONVERTED_SWITCH_POSITION = [115 200 100 22];
     end
     
     % ********************************************************************  
     % *                                                                  *
-    % * 1.d CONSTANTS: Moving image panel.                               *
+    % * 1.d CONSTANTS: Moving image panel and children.                  *
     % *                                                                  *
     % ********************************************************************
     properties (Constant)
+        
+        % Moving image constants.
         MOVING_IMAGE_LOAD_BUTTON_POSITION = [125 308 100 22];
         MOVING_IMAGE_LOAD_BUTTON_TITLE_DEFAULT = 'Load';
         MOVING_IMAGE_LOAD_BUTTON_TITLE_RELOAD = 'Reload';
         MOVING_IMAGE_LOAD_BUTTON_TYPE = 'push';
         
+        % Moving image panel constants.
         MOVING_IMAGE_PANEL_FONT_SIZE = 14; 
         MOVING_IMAGE_PANEL_POSITION = [396 21 350 534]; 
         MOVING_IMAGE_PANEL_TITLE = 'Moving image';
         
+        % Moving image viewer constants.
         MOVING_IMAGE_VIEWER_POSITION = [1 350 349 147];
     end
     
     % ********************************************************************  
     % *                                                                  *
-    % * 1.e CONSTANTS: Registration options panel.                       *
+    % * 1.e CONSTANTS: Registration options panel and children.          *
     % *                                                                  *
     % ********************************************************************
-    properties (Constant)     
+    properties (Constant)
+        
+        % Registration image constants.     
         REGISTRATION_COMBINED_IMAGE_VIEWER_POSITION = [2 350 349 147];
         REGISTRATION_REGISTERED_IMAGE_VIEWER_POSITION = [2 050 349 147];
         
+        % Registration knob constants.
         REGISTRATION_ITERATIONS_KNOB_POSITION = [80 260 50 50]
         REGISTRATION_RADIUS_KNOB_POSITION = [260 260 50 50]
         
+        % Registration options panel constants.
         REGISTRATION_OPTIONS_PANEL_FONT_SIZE = 14;
         REGISTRATION_OPTIONS_PANEL_POSITION = [775 21 444 534];
         REGISTRATION_OPTIONS_PANEL_TITLE = 'Registration options';
@@ -122,14 +166,17 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     
     % ********************************************************************  
     % *                                                                  *
-    % * 1.e CONSTANTS: Logger.                                           *
+    % * 1.e CONSTANTS: Logger and label.                                 *
     % *                                                                  *
     % ********************************************************************
     properties (Constant)
+        
+        % Logger label constants.
         LOGGER_LABEL_HORIZONTAL_POSITION = 'right';
         LOGGER_LABEL_POSITION = [27 653 113 22];
         LOGGER_LABEL_TEXT = '';
-
+        
+        % Logger constants.
         LOGGER_TEXT_DEFAULT = '';
         LOGGER_POSITION = [155 378 1062 299];
     end    
@@ -142,7 +189,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     
     % ********************************************************************  
     % *                                                                  *
-    % * 1.a PUBLIC PROPERTIES: Instructions, title and window.           *
+    % * 2.a PUBLIC PROPERTIES: Instructions, title and window.           *
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
@@ -153,7 +200,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
 
     % ********************************************************************  
     % *                                                                  *
-    % * 1.b PUBLIC PROPERTIES: Tab group and tabs.                       *
+    % * 2.b PUBLIC PROPERTIES: Tab group and tabs.                       *
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
@@ -164,11 +211,14 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     
     % ********************************************************************  
     % *                                                                  *
-    % * 1.c PUBLIC PROPERTIES: Target image panel.                       *
+    % * 2.c PUBLIC PROPERTIES: Target image panel.                       *
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        targetImage                 
+        targetImageOriginal
+        targetOriginalOrConvertedSwitch     matlab.ui.control.Switch
+        targetImageInt16
+        targetImageShown
         targetImageViewer                   matlab.ui.control.UIAxes
         targetImageLoadButton               matlab.ui.control.Button
         targetImagePanel                    matlab.ui.container.Panel        
@@ -176,11 +226,13 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         
     % ********************************************************************  
     % *                                                                  *
-    % * 1.d PUBLIC PROPERTIES: Moving image panel.                       *
+    % * 2.d PUBLIC PROPERTIES: Moving image panel.                       *
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
-        movingImage                 
+        movingImageOriginal
+        movingImageInt16
+        movingImageShown
         movingImageViewer                   matlab.ui.control.UIAxes
         movingImageLoadButton               matlab.ui.control.Button
         movingImagePanel                    matlab.ui.container.Panel       
@@ -188,7 +240,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
 
     % ********************************************************************  
     % *                                                                  *
-    % * 1.e PUBLIC PROPERTIES: Registration options panel.               *
+    % * 2.e PUBLIC PROPERTIES: Registration options panel.               *
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
@@ -201,7 +253,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     
     % ********************************************************************  
     % *                                                                  *
-    % * 1.f PUBLIC PROPERTIES: Logger.                                   *
+    % * 2.f PUBLIC PROPERTIES: Logger.                                   *
     % *                                                                  *
     % ********************************************************************
     properties (Access = public)
@@ -211,7 +263,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
 
     % ********************************************************************  
     % *                                                                  *
-    % * 2. PUBLIC FUNCTIONS                                              *
+    % * 3. PUBLIC FUNCTIONS                                              *
     % *                                                                  *
     % ********************************************************************
     methods (Access = public)
@@ -230,14 +282,285 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
 
         function delete(app)
-            app.info('Delete app.', false);
+            app.info('PiaOneAssessmentFour delete.', false);
             delete(app.window)
         end
     end
     
     % ********************************************************************  
     % *                                                                  *
-    % * 3. PRIVATE CREATE WINDOW AND CHILD COMPONENT FUNCTIONS           *
+    % * 4. PRIVATE EVENT FUNCTIONS                                       *
+    % *                                                                  *
+    % ********************************************************************
+    methods (Access = private)
+        
+        function onButtonClickLoadMovingImage(app, ~)
+            app.info( ...
+                'Callback: onButtonClickLoadMovingImage.', ...
+                true ...
+            );   
+
+            imageFileUploadSpecification = { ...
+                app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
+                'All recognised image files' ...
+            };
+            [f, p] = uigetfile(imageFileUploadSpecification);
+            
+            if (ischar(p))
+               app.updateMovingImageLoadButtonText( ...
+                   app.MOVING_IMAGE_LOAD_BUTTON_TITLE_RELOAD ...
+               );                 
+               imageFilePath = [p f];
+               app.updateMovingImageViewer(imageFilePath);
+            end
+        end
+        
+        function onButtonClickLoadTargetImage(app, ~)
+            app.info( ...
+                'Callback: onButtonClickLoadTargetImage.', ...
+                true ...
+            );   
+
+            imageFileUploadSpecification = { ...
+                app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
+                'All recognised image files' ...
+            };
+            [f, p] = uigetfile(imageFileUploadSpecification);          
+            
+            if (ischar(p))
+               app.updateTargetImageLoadButtonText( ...
+                   app.TARGET_IMAGE_LOAD_BUTTON_TITLE_RELOAD ...
+               );                    
+               targetImageFilePath = [p f];
+               app.updateTargetImageViewer(targetImageFilePath);
+            end
+        end
+        
+        function onKnobValueChange(app, ~)
+            app.register();
+        end
+        
+        function onStartup(app)
+            app.info('PiaOneAssessmentFour startup.', false); 
+        end  
+    end
+    
+    % ********************************************************************  
+    % *                                                                  *
+    % * 5. PRIVATE UPDATE FUNCTIONS                                      *
+    % *                                                                  *
+    % ********************************************************************
+    methods (Access = private)
+
+        function updateMovingImageLoadButtonText(app, updatedText)
+             app.info( ...
+                 'updateMovingImageLoadButtonText.', ...
+                 true ...
+             );
+            app.movingImageLoadButton.Text = updatedText;
+        end
+        
+        function updateMovingImageViewer(app, movingImageFilePath)
+             app.info( ...
+                 'updateMovingImageViewer.', ...
+                 true ...
+            );            
+            try
+                app.movingImageOriginal = app.loadImage( ...
+                    movingImageFilePath ...
+                );
+            
+                app.movingImageInt16 = app.convertToGrey( ...
+                    movingImageFilePath ...
+                );
+                app.movingImageShown = app.movingImageInt16;
+            catch error
+                uialert(app.window, error.message, 'Image Error');
+                return;
+            end 
+ 
+            imagesc(app.movingImageViewer, app.movingImageInt16);
+            app.updateRegistrationCombinedImageViewer();
+        end
+  
+        function updateTargetImageLoadButtonText(app, updatedText)
+             app.info( ...
+                 'updateTargetImageLoadButtonText.', ...
+                 true ...
+             );            
+            app.targetImageLoadButton.Text = updatedText;
+        end
+        
+        function updateTargetImageViewer(app, targetImageFilePath)
+             app.info( ...
+                 'updateTargetImageViewer.', ...
+                 true ...
+            );              
+            try
+                app.targetImageOriginal = app.loadImage( ...
+                    targetImageFilePath ...
+                );                
+                
+                app.targetImageInt16 = app.convertToGrey( ...
+                    targetImageFilePath ...                
+                );
+                app.targetImageShown = app.targetImageInt16;
+            catch error
+                uialert(app.window, error.message, 'Image Error');
+                return;
+            end 
+ 
+            imagesc(app.targetImageViewer, app.targetImageShown);
+            app.updateRegistrationCombinedImageViewer();
+        end 
+        
+        function updateRegistrationCombinedImageViewer(app)
+            app.info( ...
+                'updateRegistrationCombinedImageViewer.', ...
+                true ...
+           );              
+
+           if (~isempty(app.movingImageShown) ... 
+                   && ~isempty(app.targetImageShown))     
+               
+               pairedImage = imfuse( ...
+                   app.movingImageShown, ...
+                   app.targetImageShown ...
+               );
+               imagesc( ...
+                   app.registrationCombinedImageViewer, ...
+                   pairedImage ...
+               );
+           
+               app.register();
+           end   
+        end 
+       
+        function updateRegistrationRegisteredImageViewer( ...
+           app, ...
+           registeredImage ...
+        )
+            app.info( ...
+                'updateRegistrationRegisteredImageViewer.', ...
+                true ...
+           );              
+
+           imagesc( ...
+               app.registrationRegisteredImageViewer, ...
+               registeredImage ...
+           );
+        end                 
+    end
+    
+    % ********************************************************************  
+    % *                                                                  *
+    % * 6. PRIVATE REGISTRATION FUNCTIONS                                *
+    % *                                                                  *
+    % ********************************************************************        
+    methods (Access = private)
+
+        function registeredImage = register(app)            
+            app.info( ...
+                 'Register.', ...
+                 true ...
+             );
+         
+            [optimizer, metric] = imregconfig('multimodal');
+            
+            optimizer.MaximumIterations = ...
+                round(app.registrationIterationsKnob.Value);
+            
+            optimizer.InitialRadius = ...
+                app.registrationRadiusKnob.Value;
+
+            registeredImage = imregister( ...
+                app.movingImageShown, ...
+                app.targetImageShown, ...
+                'affine', ...
+                optimizer, ...
+                metric ...
+            );
+        
+             app.updateRegistrationRegisteredImageViewer( ...
+                registeredImage ...
+            );        
+        end               
+    end     
+        
+    % ********************************************************************  
+    % *                                                                  *
+    % * 7. PRIVATE UTILITY FUNCTIONS                                     *
+    % *                                                                  *
+    % ********************************************************************
+    methods (Access = private)
+
+        function clearCommandWindow(app)
+            app.info('Clearing the command window.', false);
+            if (app.SHOULD_CLEAR_COMMAND_WINDOW == true)
+               clc; 
+            end    
+        end
+        
+        function convertedImage = convertToGrey(app, imageFilePath)
+            app.info('Convert to grey.', true);
+
+            [imageToConvert, map] = imread(imageFilePath);   
+            [~, ~, numberOfColourChannels] = size(imageToConvert);
+            
+            if (numberOfColourChannels == 3)
+                convertedImage = rgb2gray(imageToConvert);
+                
+            elseif (numberOfColourChannels == 1 && isempty(map))
+                convertedImage = imageToConvert;
+                                
+            elseif (numberOfColourChannels == 1 && not(isempty(map)))           
+                convertedImage = ind2gray(imageToConvert, map); 
+            end
+        end
+        
+        function info(app, message, shouldLogInfo)
+            if (app.SHOW_INFO_FLAG == true)
+                disp(message);
+
+                if (shouldLogInfo == true)
+                    loggerText = strcat( ... 
+                        app.logger.Text, ...
+                        '\n\', ...
+                        message ...
+                    );
+                    app.logger.Text = loggerText;
+                end                   
+            end 
+        end
+        
+        function image = loadImage(~, imageFilePath)
+            try
+               image = imread(imageFilePath);
+            catch
+                
+                try
+                   info = dicominfo(imageFilePath);
+                   image = dicomread(imageFilePath);
+                catch
+                    
+                    try
+                        image = niftiread(imageFilePath);
+                    catch exception
+                        uialert( ...
+                            app.window, ...
+                            exception.message, ...
+                            'Image load error' ...
+                        );
+                        return;
+                    end    
+                end    
+            end    
+        end      
+    end
+    
+    % ********************************************************************  
+    % *                                                                  *
+    % * 8. PRIVATE CREATE WINDOW AND CHILD COMPONENT FUNCTIONS           *
     % *                                                                  *
     % ********************************************************************
     methods (Access = private)
@@ -365,6 +688,15 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                     @onButtonClickLoadTargetImage, ...
                     true ...
                 );
+            
+            app.targetOriginalOrConvertedSwitch = ...
+                uiswitch(app.targetImagePanel);
+            
+            app.targetOriginalOrConvertedSwitch.Position = ...
+                app.TARGET_ORIGINAL_OR_CONVERTED_SWITCH_POSITION;
+            
+            app.targetOriginalOrConvertedSwitch.Items = ...
+                app.TARGET_ORIGINAL_OR_CONVERTED_SWITCH_ITEMS;
         end
         
         function createChildComponentMovingImagePanel(app)
@@ -509,220 +841,5 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.title.Position = app.TITLE_POSITION;
             app.title.Text = app.TITLE_TEXT;
         end
-    end
-    
-    % ********************************************************************  
-    % *                                                                  *
-    % * 4. PRIVATE EVENT FUNCTIONS                                       *
-    % *                                                                  *
-    % ********************************************************************
-    methods (Access = private)
-        
-        function onButtonClickLoadMovingImage(app, ~)
-            app.info( ...
-                'Callback: onButtonClickLoadMovingImage.', ...
-                true ...
-            );   
-
-            imageFileUploadSpecification = { ...
-                app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
-                'All recognised image files' ...
-            };
-            [f, p] = uigetfile(imageFileUploadSpecification);
-            
-            if (ischar(p))
-               app.updateMovingImageLoadButtonText( ...
-                   app.MOVING_IMAGE_LOAD_BUTTON_TITLE_RELOAD ...
-               );                 
-               imageFilePath = [p f];
-               app.updateMovingImageViewer(imageFilePath);
-            end
-        end
-        
-        function onButtonClickLoadTargetImage(app, ~)
-            app.info( ...
-                'Callback: onButtonClickLoadTargetImage.', ...
-                true ...
-            );   
-
-            imageFileUploadSpecification = { ...
-                app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
-                'All recognised image files' ...
-            };
-            [f, p] = uigetfile(imageFileUploadSpecification);          
-            
-            if (ischar(p))
-               app.updateTargetImageLoadButtonText( ...
-                   app.TARGET_IMAGE_LOAD_BUTTON_TITLE_RELOAD ...
-               );                    
-               targetImageFilePath = [p f];
-               app.updateTargetImageViewer(targetImageFilePath);
-            end
-        end
-        
-        function onKnobValueChange(app, ~)
-            app.register();
-        end
-        
-        function onStartup(app)
-            app.info('Startup function.', false); 
-        end  
-    end
-    
-    % ********************************************************************  
-    % *                                                                  *
-    % * 5. PRIVATE UPDATE FUNCTIONS                                      *
-    % *                                                                  *
-    % ********************************************************************
-    methods (Access = private)
-
-        function updateMovingImageLoadButtonText(app, updatedText)
-             app.info( ...
-                 'updateMovingImageLoadButtonText.', ...
-                 true ...
-             );
-            app.movingImageLoadButton.Text = updatedText;
-        end
-        
-        function updateMovingImageViewer(app, movingImageFilePath)
-             app.info( ...
-                 'updateMovingImageViewer.', ...
-                 true ...
-            );            
-            try
-                app.movingImage = imread(movingImageFilePath);
-            catch error
-                uialert(app.window, error.message, 'Image Error');
-                return;
-            end 
- 
-            imagesc(app.movingImageViewer, app.movingImage);
-            app.updateRegistrationCombinedImageViewer();
-        end
-        
-        function updateTargetImageLoadButtonText(app, updatedText)
-             app.info( ...
-                 'updateTargetImageLoadButtonText.', ...
-                 true ...
-             );            
-            app.targetImageLoadButton.Text = updatedText;
-        end
-        
-        function updateTargetImageViewer(app, targetImageFilePath)
-             app.info( ...
-                 'updateTargetImageViewer.', ...
-                 true ...
-            );              
-            try
-                app.targetImage = imread(targetImageFilePath);
-            catch error
-                uialert(app.window, error.message, 'Image Error');
-                return;
-            end 
- 
-            imagesc(app.targetImageViewer, app.targetImage);
-            app.updateRegistrationCombinedImageViewer();
-        end
-        
-        function updateRegistrationCombinedImageViewer(app)
-             app.info( ...
-                 'updateRegistrationCombinedImageViewer.', ...
-                 true ...
-            );              
-
-            if (~isempty(app.movingImage) && ~isempty(app.targetImage))     
-                pairedImage = imfuse( ...
-                    app.movingImage, ...
-                    app.targetImage ...
-                );
-                imagesc( ...
-                    app.registrationCombinedImageViewer, ...
-                    pairedImage ...
-                );
-            
-                app.register();
-            end   
-        end 
-        
-        function updateRegistrationRegisteredImageViewer( ...
-            app, ...
-            registeredImage ...
-        )
-             app.info( ...
-                 'updateRegistrationRegisteredImageViewer.', ...
-                 true ...
-            );              
-
-            imagesc( ...
-                app.registrationRegisteredImageViewer, ...
-                registeredImage ...
-            );
-        end         
-    end
-    
-    % ********************************************************************  
-    % *                                                                  *
-    % * 6. PRIVATE REGISTRATION FUNCTIONS                                *
-    % *                                                                  *
-    % ********************************************************************    
-    
-    methods (Access = private)
-
-        function registeredImage = register(app)            
-            app.info( ...
-                 'Register.', ...
-                 true ...
-             );
-         
-            [optimizer, metric] = imregconfig('multimodal');
-            
-            optimizer.MaximumIterations = ...
-                round(app.registrationIterationsKnob.Value);
-            
-            optimizer.InitialRadius = ...
-                app.registrationRadiusKnob.Value;
-
-            registeredImage = imregister( ...
-                app.movingImage, ...
-                app.targetImage, ...
-                'affine', ...
-                optimizer, ...
-                metric ...
-            );
-        
-             app.updateRegistrationRegisteredImageViewer( ...
-                registeredImage ...
-            );        
-        end               
-    end     
-        
-    % ********************************************************************  
-    % *                                                                  *
-    % * 6. PRIVATE UTILITY FUNCTIONS                                     *
-    % *                                                                  *
-    % ********************************************************************
-    methods (Access = private)
-
-        function clearCommandWindow(app)
-            app.info('Clearing the command window.', false);
-            if (app.SHOULD_CLEAR_COMMAND_WINDOW == true)
-               clc; 
-            end    
-        end
-        
-        function info(app, message, shouldLogInfo)
-            if (app.SHOW_INFO_FLAG == true)
-                disp(message);
-
-                if (shouldLogInfo == true)
-                    loggerText = strcat( ... 
-                        app.logger.Text, ...
-                        '\n\', ...
-                        message ...
-                    );
-                    app.logger.Text = loggerText;
-                end                   
-            end 
-        end               
     end    
 end
