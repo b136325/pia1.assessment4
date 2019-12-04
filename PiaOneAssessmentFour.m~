@@ -14,7 +14,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * MatLab version: R2019b                                           *
     % * OS: Mac OS Catalina (10.15)                                      *
     % *                                                                  *
-    % * Revision (Git tag): 0.4.0                                        *
+    % * Revision (Git tag): 0.3.6                                        *
     % *                                                                  *
     % ********************************************************************
     % *                                                                  *
@@ -308,21 +308,11 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             end
         end
         
-        function onDropDownChange(app, valueChangedObject)
-            app.info('onDropDownChang');
+        function onDropDownChange(app, ~)
             
-            switch valueChangedObject.Value          
-                case "Gaussian"
-                    app.applyTargetGaussianFilter();
-                case "Original"
-                    app.updateTargetImageViewer(false);
-                case "Med"    
-                   app.applyTargetMedFilter();
-            end
         end    
         
         function onKnobValueChange(app, ~)
-            app.info('onKnobValueChange');
             app.register();
         end
         
@@ -369,21 +359,17 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function updateTargetImageViewer(app, targetImageFilePath)
-            app.info('updateTargetImageViewer.');
-            app.info(targetImageFilePath);
-            
-            if (targetImageFilePath ~= false)
-                try
-                    app.targetImageOriginal = app.loadImage( ...
-                        targetImageFilePath ...
-                    );                
-
-                catch error
-                    uialert(app.window, error.message, 'Image Error');
-                    return;
-                end
-            end
-            
+            app.info('updateTargetImageViewer.');              
+            try
+                app.targetImageOriginal = app.loadImage( ...
+                    targetImageFilePath ...
+                );                
+                
+            catch error
+                uialert(app.window, error.message, 'Image Error');
+                return;
+            end 
+ 
             app.targetImage = app.targetImageOriginal;
             imagesc(app.targetImageViewer, app.targetImage);
             app.updateMovingImageViewer(app.targetImage);
@@ -472,9 +458,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     methods (Access = private)
         
-        function applyTargetGaussianFilter(app)
-            app.info('applyTargetGaussianFilter');
-            
+        function applyTargetGaussianFilter(app) 
             filter = fspecial( ...
                 "gaussian", ...
                 app.GAUSSIAN_FILTER_HSIZE, ...
@@ -489,7 +473,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         end
         
         function applyTargetMedFilter(app) 
-            app.info('applyTargetMedFilter');
             app.targetImage = medfilt2(app.targetImageOriginal);
         end         
     end
@@ -502,7 +485,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     methods (Access = private)
 
         function clearCommandWindow(app)
-            app.info('Clearing the command window');
+            app.info('Clearing the command window.');
             if (app.SHOULD_CLEAR_COMMAND_WINDOW == true)
                clc; 
             end    
@@ -531,9 +514,8 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             end 
         end
         
-        function image = loadImage(app, imageFilePath)
+        function image = loadImage(~, imageFilePath)
             app.info('LoadImage.');
-            app.info(imageFilePath);
             
             try
                image = imread(imageFilePath);
