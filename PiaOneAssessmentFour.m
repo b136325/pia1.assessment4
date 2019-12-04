@@ -14,7 +14,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * MatLab version: R2019b                                           *
     % * OS: Mac OS Catalina (10.15)                                      *
     % *                                                                  *
-    % * Revision (Git tag): 0.3.0                                        *
+    % * Revision (Git tag): 0.3.1                                        *
     % *                                                                  *
     % ********************************************************************
     % *                                                                  *
@@ -114,11 +114,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         
         % Target image viewer.
         TARGET_IMAGE_VIEWER_POSITION = [0 350 350 147];
-
-        % Target Original or Converted Image Switch.
-        TARGET_ORIGINAL_OR_CONVERTED_SWITCH_ITEMS = ...
-            {'Original', 'Converted'};        
-        TARGET_ORIGINAL_OR_CONVERTED_SWITCH_POSITION = [115 200 100 22];
     end
     
     % ********************************************************************  
@@ -216,7 +211,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Access = public)
         targetImageOriginal
-        targetOriginalOrConvertedSwitch     matlab.ui.control.Switch
         targetImageInt16
         targetImageShown
         targetImageViewer                   matlab.ui.control.UIAxes
@@ -688,15 +682,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                     @onButtonClickLoadTargetImage, ...
                     true ...
                 );
-            
-            app.targetOriginalOrConvertedSwitch = ...
-                uiswitch(app.targetImagePanel);
-            
-            app.targetOriginalOrConvertedSwitch.Position = ...
-                app.TARGET_ORIGINAL_OR_CONVERTED_SWITCH_POSITION;
-            
-            app.targetOriginalOrConvertedSwitch.Items = ...
-                app.TARGET_ORIGINAL_OR_CONVERTED_SWITCH_ITEMS;
         end
         
         function createChildComponentMovingImagePanel(app)
