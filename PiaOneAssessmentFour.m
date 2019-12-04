@@ -14,7 +14,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * MatLab version: R2019b                                           *
     % * OS: Mac OS Catalina (10.15)                                      *
     % *                                                                  *
-    % * Revision (Git tag): 0.3.2                                        *
+    % * Revision (Git tag): 0.3.3                                        *
     % *                                                                  *
     % ********************************************************************
     % *                                                                  *
@@ -122,16 +122,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Constant)
         
-        % Moving image constants.
-        MOVING_IMAGE_LOAD_BUTTON_POSITION = [125 308 100 22];
-        MOVING_IMAGE_LOAD_BUTTON_TITLE_DEFAULT = 'Load';
-        MOVING_IMAGE_LOAD_BUTTON_TITLE_RELOAD = 'Reload';
-        MOVING_IMAGE_LOAD_BUTTON_TYPE = 'push';
-        
         % Moving image panel constants.
         MOVING_IMAGE_PANEL_FONT_SIZE = 14; 
         MOVING_IMAGE_PANEL_POSITION = [396 21 350 534]; 
-        MOVING_IMAGE_PANEL_TITLE = 'Moving image';
+        MOVING_IMAGE_PANEL_TITLE = 'Automatically generated moving image';
         
         % Moving image viewer constants.
         MOVING_IMAGE_VIEWER_POSITION = [1 350 349 147];
@@ -210,7 +204,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         movingImageInt16
         movingImageShown
         movingImageViewer                   matlab.ui.control.UIAxes
-        movingImageLoadButton               matlab.ui.control.Button
         movingImagePanel                    matlab.ui.container.Panel       
     end
 
@@ -260,24 +253,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     methods (Access = private)
         
-        function onButtonClickLoadMovingImage(app, ~)
-            app.info('Callback: onButtonClickLoadMovingImage.');   
-
-            imageFileUploadSpecification = { ...
-                app.IMAGE_FILE_EXTENSIONS_WHITELIST, ...
-                'All recognised image files' ...
-            };
-            [f, p] = uigetfile(imageFileUploadSpecification);
-            
-            if (ischar(p))
-               app.updateMovingImageLoadButtonText( ...
-                   app.MOVING_IMAGE_LOAD_BUTTON_TITLE_RELOAD ...
-               );                 
-               imageFilePath = [p f];
-               app.updateMovingImageViewer(imageFilePath);
-            end
-        end
-        
         function onButtonClickLoadTargetImage(app, ~)
             app.info('Callback: onButtonClickLoadTargetImage.');   
 
@@ -311,11 +286,6 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************
     methods (Access = private)
-
-        function updateMovingImageLoadButtonText(app, updatedText)
-            app.info('updateMovingImageLoadButtonText.');
-            app.movingImageLoadButton.Text = updatedText;
-        end
         
         function updateMovingImageViewer(app, movingImageFilePath)
             app.info('updateMovingImageViewer.');            
@@ -610,25 +580,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             app.movingImageViewer.XTick = [];
             app.movingImageViewer.XTickLabel = {'[ ]'};
             app.movingImageViewer.YTick = [];
-            
-            app.movingImageLoadButton = uibutton( ...
-                app.movingImagePanel, ...
-                app.MOVING_IMAGE_LOAD_BUTTON_TYPE ...
-            );
-            
-            app.movingImageLoadButton.Position = ...
-                app.MOVING_IMAGE_LOAD_BUTTON_POSITION;
-            
-            app.updateMovingImageLoadButtonText( ...
-                app.MOVING_IMAGE_LOAD_BUTTON_TITLE_DEFAULT ...
-            );    
-            
-            app.movingImageLoadButton.ButtonPushedFcn = ...
-                createCallbackFcn( ...
-                    app, ...
-                    @onButtonClickLoadMovingImage, ...
-                    true ...
-                );            
+                       
         end
         
         function createChildComponentRegistrationOptionsPanel(app)
