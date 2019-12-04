@@ -14,7 +14,7 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % * MatLab version: R2019b                                           *
     % * OS: Mac OS Catalina (10.15)                                      *
     % *                                                                  *
-    % * Revision (Git tag): 0.3.3                                        *
+    % * Revision (Git tag): 0.3.5                                        *
     % *                                                                  *
     % ********************************************************************
     % *                                                                  *
@@ -147,8 +147,11 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
         REGISTRATION_REGISTERED_IMAGE_VIEWER_POSITION = [2 050 349 147];
         
         % Registration knob constants.
-        REGISTRATION_ITERATIONS_KNOB_POSITION = [80 260 50 50]
-        REGISTRATION_RADIUS_KNOB_POSITION = [260 260 50 50]
+        REGISTRATION_ITERATIONS_KNOB_POSITION = [80 260 50 50];
+
+        REGISTRATION_MAX_STEP_KNOB_DEFAULT = 0.0625;
+        REGISTRATION_MAX_STEP_KNOB_POSITION = [260 260 50 50];
+        REGISTRATION_MAX_STEP_KNOW_LIMITS = [0.01, 1];
         
         % Registration options panel constants.
         REGISTRATION_OPTIONS_PANEL_FONT_SIZE = 14;
@@ -214,9 +217,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % ********************************************************************
     properties (Access = public)
         registrationCombinedImageViewer     matlab.ui.control.UIAxes
+        registrationEstimate
         registrationIterationsKnob          matlab.ui.control.Knob
         registrationOptionsPanel            matlab.ui.container.Panel
-        registrationRadiusKnob              matlab.ui.control.Knob
+        registrationMaxStepKnob              matlab.ui.control.Knob
         registrationRegisteredImageViewer   matlab.ui.control.UIAxes
     end       
 
@@ -305,6 +309,10 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
             tform = affine2d(shear * scale * rotation);
        
             app.movingImage = imwarp(targetImage, tform);
+            
+            app.movingImage = app.movingImage + ...
+                uint8(10*rand(size(app.movingImage)));
+            
             imagesc(app.movingImageViewer, app.movingImage);
         end
   
@@ -327,26 +335,28 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
  
             imagesc(app.targetImageViewer, app.targetImage);
             app.updateMovingImageViewer(app.targetImage);
+            
+            app.generateRegistrationEstimate();
             app.updateRegistrationCombinedImageViewer();
+            app.register();
         end 
         
         function updateRegistrationCombinedImageViewer(app)
             app.info('updateRegistrationCombinedImageViewer.');              
-
-           if (~isempty(app.movingImage) ... 
-                   && ~isempty(app.targetImage))     
                
-               pairedImage = imfuse( ...
-                   app.movingImage, ...
-                   app.targetImage ...
-               );
-               imagesc( ...
-                   app.registrationCombinedImageViewer, ...
-                   pairedImage ...
-               );
-           
-               app.register();
-           end   
+            targetFixed = imref2d(size(app.targetImage));
+
+            movingRegistrationImage = imwarp( ...
+                app.movingImage, ...
+                app.registrationEstimate, ...
+                'OutputView', ...
+                targetFixed ...
+            );
+       
+           imagesc( ...
+               app.registrationCombinedImageViewer, ...
+               movingRegistrationImage ...
+           );
         end 
        
         function updateRegistrationRegisteredImageViewer( ...
@@ -368,24 +378,33 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
     % *                                                                  *
     % ********************************************************************        
     methods (Access = private)
+        
+        function generateRegistrationEstimate(app)
+            app.registrationEstimate = imregcorr( ...
+                app.movingImage, ...
+                app.targetImage ...
+            );
+        end    
 
         function registeredImage = register(app)            
             app.info('Register.');
          
-            [optimizer, metric] = imregconfig('multimodal');
+            [optimizer, metric] = imregconfig('monomodal');
             
             optimizer.MaximumIterations = ...
                 round(app.registrationIterationsKnob.Value);
             
-            optimizer.InitialRadius = ...
-                app.registrationRadiusKnob.Value;
+            optimizer.MaximumStepLength = ...
+                app.registrationMaxStepKnob.Value;
 
             registeredImage = imregister( ...
                 app.movingImage, ...
                 app.targetImage, ...
                 'affine', ...
                 optimizer, ...
-                metric ...
+                metric, ...
+                'InitialTransformation', ...
+                app.registrationEstimate ...
             );
         
              app.updateRegistrationRegisteredImageViewer( ...
@@ -629,16 +648,19 @@ classdef PiaOneAssessmentFour < matlab.apps.AppBase
                     true ...
                 );  
             
-            app.registrationRadiusKnob = ...
+            app.registrationMaxStepKnob = ...
                 uiknob(app.registrationOptionsPanel);
             
-            app.registrationRadiusKnob.Limits = [0.001, 0.01];
-            app.registrationRadiusKnob.Value = 0.0063;
+            app.registrationMaxStepKnob.Limits = ...
+                app.REGISTRATION_MAX_STEP_KNOW_LIMITS;
             
-            app.registrationRadiusKnob.Position = ...
-                app.REGISTRATION_RADIUS_KNOB_POSITION;
+            app.registrationMaxStepKnob.Value = ...
+                app.REGISTRATION_MAX_STEP_KNOB_DEFAULT;
             
-            app.registrationRadiusKnob.ValueChangedFcn = ...
+            app.registrationMaxStepKnob.Position = ...
+                app.REGISTRATION_MAX_STEP_KNOB_POSITION;
+            
+            app.registrationMaxStepKnob.ValueChangedFcn = ...
                 createCallbackFcn( ...
                     app, ...
                     @onKnobValueChange, ...
